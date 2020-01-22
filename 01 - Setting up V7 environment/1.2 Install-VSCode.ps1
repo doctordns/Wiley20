@@ -4,9 +4,10 @@
 # Run in PowerShell 7 WIndow!
 
 # 1. Download the VS Code Installation Script
+$VSCPATH = 'C:\Foo'
 Install-PackageProvider -Name Nuget -MinimumVersion 2.8.5.201 -Force
-Save-Script -Name Install-VSCode -Path C:\Foo
-Set-Location -Path C:\Foo
+Save-Script -Name Install-VSCode -Path $VSCPATH
+Set-Location -Path $VSCPATH
 
 # 2. Now run it and add in some popular VSCode Extensions
 $Extensions =  "Streetsidesoftware.code-spell-checker",
@@ -19,9 +20,10 @@ $InstallHT = @{
 }             
 .\Install-VSCode.ps1 @InstallHT 
 
-# 3. Create Empty Personal Profile File
-New-Item -Path $profile -Force -ItemType File |
+# 3. Create a Sample Profile File
+New-Item -Path $profile -Force -ItemType File  |
     Out-Null
+    
 
 # 4. Create Powershell Module Folders
 $IT = @{
