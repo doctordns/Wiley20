@@ -36,7 +36,7 @@ Set-Alias gh    Get-Help
 Set-Alias ghd   Get-HelpDetailed
 
 # Reskit Credential
-$Urk = 'reskit\administrator'
+$Urk = 'Reskit\Administrator'
 $Prk = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
 $Credrk = New-Object system.management.automation.PSCredential $Urk, $Prk
 "`$Credrk created for $($credrk.username)"

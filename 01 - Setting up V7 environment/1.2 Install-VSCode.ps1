@@ -21,9 +21,10 @@ $InstallHT = @{
 .\Install-VSCode.ps1 @InstallHT 
 
 # 3. Create a Sample Profile File
-New-Item -Path $profile -Force -ItemType File  |
-    Out-Null
-    
+$SAMPLE = "https://raw.githubusercontent.com/doctordns/Wiley20/master" + 
+          "/Microsoft.VSCode_profile.ps1"
+(Invoke-WebRequest -Uri $Sample).Content |
+  Out-File $Profile
 
 # 4. Create Powershell Module Folders
 $IT = @{
