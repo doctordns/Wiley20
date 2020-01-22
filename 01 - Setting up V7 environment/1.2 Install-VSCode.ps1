@@ -1,6 +1,6 @@
 ﻿# 1.2 Install-VSCode
 # 
-# Run on CL1 after installing PowerShell
+# Run on CL1 after installing PowerShell 7
 # Run in PowerShell 7 WIndow!
 
 # 1. Download the VS Code Installation Script
@@ -20,13 +20,16 @@ $InstallHT = @{
 }             
 .\Install-VSCode.ps1 @InstallHT 
 
+#  At this point, VS Code should be displayed.
+#  The remainder of this script in VS Code (or PowerSHell 7 console)
+
 # 3. Create a Sample Profile File
 $SAMPLE = "https://raw.githubusercontent.com/doctordns/Wiley20/master" + 
           "/Microsoft.VSCode_profile.ps1"
 (Invoke-WebRequest -Uri $Sample).Content |
   Out-File $Profile
 
-# 4. Create Powershell Module Folders
+# 4. Create Default Powershell Module Folders
 $IT = @{
   ItemType    = 'Directory'
   ErrorAction = 'SilentlyContinue'
@@ -35,14 +38,20 @@ New-Item -Path 'C:\Program Files\PowerShell\Modules' @IT
 New-Item -Path 'C:\Users\administrator\Documents\PowerShell\Modules' @IT
   
 # 5. Download Cascadia Code font from GitHub
-$DLPath = 'https://github.com/microsoft/cascadia-code/releases/'+
-          'download/v1911.20/Cascadia.ttf'
-$DLFile = 'C:\Foo\Cascadia.TTF'
-Invoke-WebRequest -Uri $DLPath -OutFile $DLFile
-
-# 6. Install the font using Shell.Application COM object
-$Destination = (New-Object -ComObject Shell.Application).Namespace(0x14)
-$Destination.CopyHere($DLFile,0x10)
+# Get File Locations
+$CascadiaFont    = 'Cascadia.ttf'    # font name
+$CascadiaRelURL  = 'https://github.com/microsoft/cascadia-code/releases'
+$CascadiaRelease = Invoke-WebRequest -Uri $CascadiaRelURL # Get all of them
+$CascadiaPath    = "https://github.com" + ($CascadiaRelease.Links.href | 
+                      Where-Object { $_ -match "($cascadiaFont)" } | 
+                        Select-Object -First 1)
+$CascadiaFile   = "C:\Foo\$CascadiaFont"
+# Download Cascadia Code font file
+Invoke-WebRequest -Uri $CascadiaPath -OutFile $CascadiaFile
+# Install Cascadia Code font
+$FontShellApp = New-Object -Com Shell.Application
+$FontShellNamespace = $FontShellApp.Namespace(0x14)
+$FontShellNamespace.CopyHere($cascadiaFile, 0x10)
 
 # 7. Update Local User Settings for VS Code
 #    This step in particular needs to be run in PowerShell 7!
@@ -68,7 +77,3 @@ $Settings = Join-Path  $Path -ChildPath $CP
 $JHT |
   ConvertTo-Json  |
     Out-File -FilePath $Settings
-
-
-# Now Exit PowerSheLL 5.X and continue with VS Code.
-
