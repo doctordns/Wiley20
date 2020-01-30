@@ -3,6 +3,9 @@
 # Run this on DC2
 
 # 1. Install the DNS Feature
+$SML = "$ENV:Windir\system32\WindowsPowerShell\v1.0\modules\" +
+      'ServerManager\Feature.format.ps1xml'
+Update-FormatData -PrependPath $SML
 $WAHT = @{WarningAction='SilentlyContinue'}
 Import-Module -Name ServerManager @WAHT
 Install-WindowsFeature -Name DNS -IncludeManagementTools  

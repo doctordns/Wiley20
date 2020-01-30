@@ -1,4 +1,4 @@
-﻿# 4.5 - Managing filestore screening
+﻿# 5.5 - Managing Filestore Screening
 # 
 # Run on SRV1 with FSRM loaded
 
@@ -26,9 +26,12 @@ $FSHT =  @{
 }
 New-FsrmFileScreen @FSHT
 
-# 5. Test Files screen by copying Notepad,exe
-Copy-Item C:\Windows\notepad.exe C:\FileScreen\notepad.exe
-
+# 5. Test Files screen by copying notepad.exe
+$FSTHT = @{
+  Path        = "$Env:windir\notepad.exe"
+  Destination = 'C:\FileScreen\notepad.exe'
+}
+Copy-Item  @FSTHT
 
 # 6. Setup Active Email Notification
 $Body = "You attempted to save an executable program. This is not allowed."
@@ -47,11 +50,26 @@ $FSFS = @{
   Description  = 'Block any executable file'
   Active       = $true
 }
-New-FsrmFileScreen @FSFS 
+Set-FsrmFileScreen @FSFS 
 
-# 7. re-test the file screen
-Copy-Item C:\Windows\notepad.exe C:\FileScreen\notepad.exe
+# 7. Get-FSRM Notification Limits
+Get-FsrmSetting | 
+  Format-List -Property "*NotificationLimit"
+
+# 8. ChangeignFSRM notification limits  
+$FSRMSHT = @{
+  CommandNotificationLimit = 1
+  EmailNotificationLimit   = 1
+  EventNotificationLimit   = 1
+  ReportNotificationLimit  = 1
+}
+Set-FsrmSetting @FSRMSH
+
+
+# 7. Re-test the file screen to check the the action
+Copy-Item @FSTHT
 
 # 8. View File Screen Email
+Get-FsrmSetting | WHERE-Object NAME -MATCH 'NotificationLimit'
 
 View from Outlook

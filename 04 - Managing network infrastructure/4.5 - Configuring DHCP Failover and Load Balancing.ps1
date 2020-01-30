@@ -1,7 +1,7 @@
-﻿# 4.55 - Configuring DHCP Load Balancing and Failover
+﻿# 4.5 - Configuring DHCP Load Balancing and Failover
 
 # Run on DC2 after setting DC1 up as a DHCP Server 
-# ANd with and a Scope defined
+# And with and a Scope defined
 
 # 1. Install the DHCP Server feature on DC2
 Import-Module -Name ServerManager -WarningAction SilentlyContinue

@@ -1,26 +1,35 @@
-# Recipe 4.1 - Manaing physical Disks and Volumes
+# 5.1 - Manaing Physical Disks and Volumes
 #
 # Run on SRV1
-# SRV1 has 2 extra disks that are 'bare' and just added to the VM
+
+# SRV1 needs two extra disks that are 'bare' and just added to the VM
 
 # 0. Add 2 VHDs to SRV1 VM
 #    Run this on the Hyper-V VM Host
+
 # Stop the vm
 Stop-VM -VMName SRV1
+
 # Get File location for the disk in this VM
 $VM = Get-VM -VMName SRV1
 $Par = Split-Path -Path $VM.HardDrives[0].Path
+
 # Create two VHDx for G and H
 $NewPath1 = Join-Path -Path $par -ChildPath GDrive.VHDX
 $NewPath2 = Join-Path -Path $par -ChildPath HDrive.VHDX
 $D1 = New-VHD -Path $NewPath1 -SizeBytes 128GB -Dynamic
 $D2 = New-VHD -Path $NewPath2 -SizeBytes 128GB -Dynamic
-# Add to VM
+
+# Add a new SCSI Controller to SRV1
+$C = (Get-VMScsiController -VMName SRV1)
+Add-VMScsiController -VMname SRV1
+
+# Add first disk to VM
 $HDHT = @{ 
   Path               = $NewPath1
   VMName             = 'SRV1'
   ControllerType     = 'SCSI'
-  ControllerNumber   = 0
+  ControllerNumber   = $C.count
   ControllerLocation = 0 
 }
 $HDHT = @{ 
@@ -37,6 +46,8 @@ $HDHT.ControllerLocation = 1
 Add-VMHardDiskDrive @HDHT
 # Start the VM
 Start-VM -VMName SRV1
+
+### start of main script
 
 # 1. Get physical disks on this system:
 Get-Disk |

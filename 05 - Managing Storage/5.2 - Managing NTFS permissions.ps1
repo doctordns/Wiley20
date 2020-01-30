@@ -1,27 +1,28 @@
-# Recipe 4.2 - Managing NTFS Permissions
+# 5.2 - Managing NTFS Permissions
 # 
-# Run on SRV1
+# Run on SRV1 - after  5.1 and adding/formatting 2 new disks.
 
 # 1. Download NTFSSecurity module from PSGallery
-Install-Module NTFSSecurity -Force
-Add-WindowsFeature -Name RSAT-AD-Tools -IncludeAllSubFeature |
+Install-Module -Name NTFSSecurity -Force
+Import-Module ServerManager -WarningAction SilentlyContinue
+Install-WindowsFeature -Name RSAT-AD-Tools -IncludeAllSubFeature |
   Out-Null
 
 # 2. Get commands in the module
-Get-Command -Module NTFSSecurity 
+Get-Command -Module NTFSSecurity  
 
 # 3. Create a new folder, and a file in the folder
 New-Item -Path C:\Secure1 -ItemType Directory |
     Out-Null
-"Secure" | Out-File -FilePath C:\Secure1\Secure.Txt
+'Secure' | Out-File -FilePath C:\Secure1\Secure.Txt
 Get-ChildItem -Path C:\Secure1
 
-# 4. View ACL of the folder:
+# 4. View ACL of the folder
 Get-NTFSAccess -Path C:\Secure1 |
   Format-Table -AutoSize
 
 # 5. View ACL of file
-Get-NTFSAccess C:\Secure1\Secure.Txt |
+Get-NTFSAccess -Path C:\Secure1\Secure.Txt |
   Format-Table -AutoSize
 
 
@@ -71,11 +72,11 @@ $AHT3 = @{
 }
 Add-NTFSAccess @AHT3
 
-# 12. get results on path
+# 12. Get ACL of folder
 Get-NTFSAccess -Path C:\Secure1 |
   Format-Table -AutoSize
 
-# 13. and on the file
+# 13. Get ACL on the file
 Get-NTFSAccess -Path C:\Secure1\Secure.Txt |
   Format-Table -AutoSize
 

@@ -8,7 +8,7 @@
 $JEACF = "C:\JEACapabilities"
 New-Item -Path $JEACF -ItemType Directory | Out-Null
 
-# 2. Create Role Capabilities file
+# 2. Create Role Capabilities file in the folder
 $RCF = Join-Path -Path $JEACF -ChildPath "RKDnsAsmins.psrc"
 $RCHT = @{
   Path            = $RCF
@@ -51,7 +51,9 @@ New-PSSessionConfigurationFile @PSCHT
 # 4. Test the session configuration file
 Test-PSSessionConfigurationFile -Path $P 
 
-# 5. Register the JEA Session Definition
+# 5. Enable Remoting and Register the JEA Session Definition
+Enable-PSRemoting -Force 
+  Out-Null
 $SCHT = @{
   Path  = $P
   Name  = 'RKDnsAdmins' 

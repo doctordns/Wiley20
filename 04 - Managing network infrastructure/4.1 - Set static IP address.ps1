@@ -18,12 +18,12 @@ $IPHT = @{
   InterfaceIndex = $Index
   PrefixLength   = 24
   IPAddress      = '10.10.10.51'
-  DefaultGateway = '10.10.10.254'
+ # DefaultGateway = '10.10.10.254'
   AddressFamily  = $IPType
 }
 New-NetIPAddress @IPHT | Out-Null
 
-# 3 Verify the new IP Address
+# 3. Verify the new IP Address
 Get-NetIPAddress -InterfaceIndex $Index -AddressFamily $IPType |
   Format-Table IPAddress, InterfaceIndex, PrefixLength
 
@@ -34,7 +34,7 @@ $CAHT = @{
 }
 Set-DnsClientServerAddress @CAHT
 
-# 5 Verify the New IP Configuration
+# 5. Verify the New IP Configuration
 # Verify the IPv4 address is set as required
 Get-NetIPAddress -InterfaceIndex $Index -AddressFamily $IPType |
   Format-Table

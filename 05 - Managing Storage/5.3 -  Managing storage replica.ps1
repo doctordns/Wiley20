@@ -1,6 +1,8 @@
-﻿# 4.3 - Manage Storage replica
+﻿# 5.3 - Manage Storage Replica
 # 
 # Run on SRV1, with SRV2, DC1 online
+
+#  Prepare the VM Host
 
 # 0. Add a VHDs to SRV2 VM
 #    Run this on the Hyper-V VM Host
@@ -9,17 +11,23 @@ Stop-VM -Name SRV2
 # Get File location for the disk in this VM
 $VM = Get-VM -VMName SRV2
 $Par = Split-Path -Path $VM.HardDrives[0].Path
-# Create two VHDx for G and H
+
+# Create two VHDx for G and H on SRV2
 $NewPath1 = Join-Path -Path $par -ChildPath FDrive.VHDX
 $NewPath2 = Join-Path -Path $Par -ChildPath GDrive.VHDX
 $D1 = New-VHD -Path $NewPath1 -SizeBytes 128GB -Dynamic
 $D2 = New-VHD -Path $NewPath2 -SIzebytes 128GB -Dynamic
-# Add First to VM
+
+# Add a new SCSI Controller to SRV2
+$C = (Get-VMScsiController -VMName SRV2).count
+Add-VMScsiController -VMname SRV2
+
+# Add first disk to SRV2 VM
 $HDHT = @{ 
   Path               = $NewPath1
   VMName             = 'SRV2'
   ControllerType     = 'SCSI'
-  ControllerNumber   = 0
+  ControllerNumber   = $C
   ControllerLocation = 0 
 }
 Add-VMHardDiskDrive @HDHT   # Add 1st disk to vm
@@ -27,9 +35,10 @@ Add-VMHardDiskDrive @HDHT   # Add 1st disk to vm
 $HDHT.Path               = $NewPath2
 $HDHT.ControllerLocation = 1
 Add-VMHardDiskDrive @HDHT   # Add 2nd disk to VM
-Start-VM -VMName SRV2
+Start-VM -VMName SRV2 
 
-# After  reboot, run this on SRV2 as administrator
+# After restart, run this on SRV2 as administrator
+
 Get-Disk | 
   Where-Object PartitionStyle -eq Raw |
     Initialize-Disk -PartitionStyle GPT 
@@ -44,11 +53,10 @@ $NVHT.DiskNumber   = 2
 $NVHT.FriendlyName = 'Log'
 $NVHT.DriveLetter  = 'G'
 New-Volume @NVHT  # Add 2nd new disk
-# Add Windows Compatibility module *=(in case)
-Install-Module WindowsCompatibility
+
 ###########################
 
-#  Now Logon to SRV1 to complete this script
+#  Now Logon to SRV1 to begin this script
 
 # 1. Create Content on F:
 1..100 | ForEach-Object {
@@ -63,7 +71,7 @@ Install-Module WindowsCompatibility
 # 2. Show what is on F: locally
 Get-ChildItem -Path F:\ -Recurse | Measure-Object
 
-# 3. And examine the same drives remotely on SRV2
+# 3. Examine the same drives remotely on SRV2
 $SB = {
   Get-ChildItem -Path F:\ -Recurse |
     Measure-Object
@@ -71,16 +79,17 @@ $SB = {
 Invoke-Command -ComputerName SRV2 -ScriptBlock $SB
 
 # 4. Add storage replica feature to SRV1
-Import-WinModule ServerManager
-$Features = "fs-fileserver", "storage-replica", "RSAT-Storage-Replica"
-Add-WindowsFeature -Name Storage-Replica -IncludeManagementTools
+Import-Module ServerManager
+Install-WindowsFeature -Name Storage-Replica -IncludeManagementTools
 
 # 5. Restart SRV1 to finish the installation process
 Restart-Computer
 
-# 6. Add SR Feature to SRV2
+###  Relogin to SRV1 an run the remainder of ths script
+
+# 6. Add SR Feature to SRV2 Remotely
 $SB = {
-  Add-WindowsFeature -Name Storage-Replica | Out-Null
+  Install-WindowsFeature -Name Storage-Replica | Out-Null
 }
 Invoke-Command -ComputerName SRV2 -ScriptBlock $SB
 
@@ -91,10 +100,8 @@ $RSHT = @{
 }
 Restart-Computer @RSHT -Wait -For PowerShell
 
-
-
-# 8.  Test Replica 
-Import-WinModule -Name StorageReplica
+# 8. Test Replica on SRV2 from SRV1
+Import-Module -Name StorageReplica
 $TSTHT = @{
   SourceComputerName       = 'SRV1.Reskit.Org'
   SourceVolumeName         = 'F:' 
@@ -110,8 +117,11 @@ $TSTHT = @{
 Test-SRTopology @TSTHT
 
 # 9. View the Report
-& "C:\Foo\TestSrTopologyReport-2019-08-12-12-18-27.html"
+$File = Get-ChildItem c:\foo\testsr* | 
+          Sort-Object -Property LastWriteTime -Descending |
+            Select-Object -First 1.
 
+Start-Process -Filepath $File
 
 # 10. Create an SR Replica
 $SRHT = @{
@@ -127,10 +137,10 @@ $SRHT = @{
 }
 New-SRPartnership @SRHT -Verbose 
 
-# 11. View it
+# 11. View the SR partnership
 Get-SRPartnership 
 
-# 12. And examine the same drives remotely on SRV2
+# 12. Examine the same drives remotely on SRV2
 $SB = {
   Get-Volume |
     Sort-Object -Property DriveLetter |
@@ -150,7 +160,7 @@ $SRHT2 = @{
 Set-SRPartnership @SRHT2
 
 
-# 14 View RG
+# 14 View SR Partnership on SRV1
 Get-SRPartnership
 
 # 15. Examine the same drives remotely on SRV2
@@ -158,7 +168,7 @@ $SB = {
   Get-Volume |
     Sort-Object -Property DriveLetter |
       Format-Table 
-    Get-ChildItem -Path F:\ -Recurse | Measure-Object |
+  Get-ChildItem -Path F:\ -Recurse | Measure-Object |
       Format-List
         
 }
