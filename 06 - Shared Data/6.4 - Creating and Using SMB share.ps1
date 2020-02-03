@@ -1,4 +1,4 @@
-﻿# Recipe 5.4 - Creating and securing SMB shares
+﻿# Recipe 6.4 - Creating and securing SMB shares
 #
 # Run from SRV1
 
@@ -10,10 +10,12 @@ New-Item -Path c:\Foo -ItemType Directory @EAHT
 Get-SmbShare -Name * |
   Where-Object Name -NotMatch '\$$'
 
-# 2. Share a folder 
+# 2. Ensure folder exists and then share the foler
+$EAHT = @{Erroraction = 'SilentlyContinue' }
+New-Item -Path c:\Foo -ItemType Directory @EAHT
 New-SmbShare -Name Foo -Path C:\Foo
 
-# 3. Update the share to have a description
+# 3. eUpdate the share to have a description
 $CHT = @{Confirm = $False }
 Set-SmbShare -Name Foo -Description 'Foo share for IT' @CHT
 

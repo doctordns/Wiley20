@@ -14,9 +14,9 @@ Stop-VM -VMName SRV1
 $VM = Get-VM -VMName SRV1
 $Par = Split-Path -Path $VM.HardDrives[0].Path
 
-# Create two VHDx for G and H
-$NewPath1 = Join-Path -Path $par -ChildPath GDrive.VHDX
-$NewPath2 = Join-Path -Path $par -ChildPath HDrive.VHDX
+# Create two VHDx for F and G
+$NewPath1 = Join-Path -Path $par -ChildPath FDrive.VHDX
+$NewPath2 = Join-Path -Path $par -ChildPath GDrive.VHDX
 $D1 = New-VHD -Path $NewPath1 -SizeBytes 128GB -Dynamic
 $D2 = New-VHD -Path $NewPath2 -SizeBytes 128GB -Dynamic
 
@@ -32,15 +32,8 @@ $HDHT = @{
   ControllerNumber   = $C.count
   ControllerLocation = 0 
 }
-$HDHT = @{ 
-  Path               = $NewPath1
-  VMName             = 'SRV1'
-  ControllerType     = 'SCSI'
-  ControllerNumber   = 0
-  ControllerLocation = 0 
-}
 Add-VMHardDiskDrive @HDHT
-# Add second disk
+# Add second disk to VM
 $HDHT.Path = $NewPath2
 $HDHT.ControllerLocation = 1
 Add-VMHardDiskDrive @HDHT
@@ -62,7 +55,7 @@ Get-Disk |
 Get-Disk |
   Format-Table -AutoSize
 
-# 4. Create a F: volume in disk 1
+# 4. Create a F: volume in Disk 1
 $NVHT1 = @{
   DiskNumber   = 1 
   FriendlyName = 'Storage(F)' 
@@ -71,7 +64,7 @@ $NVHT1 = @{
 }
 New-Volume @NVHT1
 
-# 5. Now create a volume in Disk 2
+# 5. Now create a partition in Disk 2
 New-Partition -DiskNumber 2  -DriveLetter G -Size 42gb
 
 # 6. Create a second partition H:
@@ -82,12 +75,14 @@ Get-Volume |
   Sort-Object -Property DriveLetter
 
 # 8. Format G: and H:
+# Format G:
 $NVHT1 = @{
   DriveLetter        = 'G'
   FileSystem         = 'NTFS' 
   NewFileSystemLabel = 'Logs'
 }
 Format-Volume @NVHT1
+# Format H:
 $NVHT2 = @{
   DriveLetter        = 'H'
   FileSystem         = 'NTFS' 

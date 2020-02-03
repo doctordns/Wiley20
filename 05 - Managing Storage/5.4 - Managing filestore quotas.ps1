@@ -3,7 +3,7 @@
 # Run on SRV1, with SRV2, DC1 online
 
 
-# 1.Install FS Resource Manager feature
+# 1. Install FS Resource Manager feature on SRV1
 Import-module -Name ServerMANAGER -WarningAction 'SllentlyContinue'
 $IHT = @{
   Name                   = 'FS-Resource-Manager' 
@@ -22,8 +22,8 @@ Set-FsrmSetting @MHT
 
 # 3. Send a test email to check the setup
 $MHT = @{
-ToEmailAddress = 'DoctorDNS@gmail.com'
-Confirm        = $false
+  ToEmailAddress = 'DoctorDNS@gmail.com'
+  Confirm        = $false
 }
 Send-FsrmTestEmail @MHT
 
@@ -59,7 +59,7 @@ $NAHT = @{
 }
 $Action1 = New-FsrmAction @NAHT
 
-# 8. Create a FSRM threshold 
+# 8. Create an FSRM threshold 
 $Thresh = New-FsrmQuotaThreshold -Percentage 85 -Action $Action1
 
 # 9.  Build a quota for the folder
@@ -73,18 +73,18 @@ New-FsrmQuota @NQHT1
 # 10. Test the 85% SOFT quota limit on C:\QuotaSGet-ChildItem -Path C:\Quota -Recurse | 
   Remove-Item -Force     # for testing purposes!
 $S = '+'.PadRight(8MB)
-# make an first file - under the soft quota
+# Make a first file - under the soft quota
 $S | Out-File -FilePath C:\Quota\Demo1.Txt
 $S2 = '+'.PadRight(.66MB)
 # Now create a second file to take the user over the soft quota
 $S2 | Out-File -FilePath C:\Quota\Demo2.Txt
-Get-ChildItem -Path C:\Quota
+
 
 # 11. Examine Email
 
     VIEW FROM Outlook
 
-# 12. now test hard limit
+# 12. Test Hard limit quota
 $S | Out-File -FilePath C:\Quota\demo3.Txt    
 
 # 13. View Folder

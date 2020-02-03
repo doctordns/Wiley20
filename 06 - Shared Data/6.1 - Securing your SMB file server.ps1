@@ -1,14 +1,13 @@
-﻿# 5.1 - Setting Up and Securing your SMB file erver
+﻿# 6.1 - Setting Up and Securing your SMB file Server
 
 # Run on FS1
 
 # 1. Add File Server features to FS1
-Install-Module -Name WindowsCompatibility -Force
-Import-WinModule -Name ServerManager
-$Features = 'FileAndStorage-Services','File-Services',
-            'FS-FileServer','RSAT-File-Services'
-Install-WindowsFeature -Name $Features
-
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
+$Features = 'FileAndStorage-Services',
+            'File-Services',
+            'FS-FileServer'
+Install-WindowsFeature -Name $Features -IncludeManagementTools
 
 # 2. Get SMB Server Settings
 Get-SmbServerConfiguration
@@ -37,7 +36,7 @@ $SHT2 = @{
 }
 Set-SmbServerConfiguration @SHT2
 
-# 6 - turn off server announcements
+# 6. Turn off server announcements
 $SHT3 = @{
     ServerHidden   = $true
     AnnounceServer = $false
@@ -45,11 +44,15 @@ $SHT3 = @{
 }
 Set-SmbServerConfiguration @SHT3
 
-# 7 - restart the service with the new configuration
+# 7. Restart the service with the new configuration
 Restart-Service lanmanserver
 
 # 8. Review SMB Server Configuration 
 Get-SmbServerConfiguration
+
+
+
+
 
 <# undo and set back to defults
 

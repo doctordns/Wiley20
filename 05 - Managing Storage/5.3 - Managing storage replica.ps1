@@ -1,4 +1,4 @@
-﻿# 5.3 - Manage Storage Replica
+﻿# 5.3 - Managing Storage Replica
 # 
 # Run on SRV1, with SRV2, DC1 online
 
@@ -59,16 +59,16 @@ New-Volume @NVHT  # Add 2nd new disk
 #  Now Logon to SRV1 to begin this script
 
 # 1. Create Content on F:
-1..100 | ForEach-Object {
+1..100 | ForEach-Object -Parallel {
   $NF = "F:\CoolFolder$_"
   New-Item -Path $NF -ItemType Directory | Out-Null
   1..100 | ForEach-Object {
-    $NF2 = "$NF\CoolFile$_"
-    "Cool File" | Out-File -PSPath $NF2
+      $NF2 = "$NF\CoolFile$_"
+      "Cool File" | Out-File -PSPath $NF2
   }
-}
+} 
 
-# 2. Show what is on F: locally
+# 2. Measuring New Content on F:
 Get-ChildItem -Path F:\ -Recurse | Measure-Object
 
 # 3. Examine the same drives remotely on SRV2
@@ -93,7 +93,7 @@ $SB = {
 }
 Invoke-Command -ComputerName SRV2 -ScriptBlock $SB
 
-# 7. And restart SRV2 Waiting for the restart
+# 7. Restart SRV2 and wait for the restart
 $RSHT = @{
   ComputerName = 'SRV2'
   Force        = $true
@@ -104,7 +104,7 @@ Restart-Computer @RSHT -Wait -For PowerShell
 Import-Module -Name StorageReplica
 $TSTHT = @{
   SourceComputerName       = 'SRV1.Reskit.Org'
-  SourceVolumeName         = 'F:' 
+  SourceVolumeName         = 'F:'
   SourceLogVolumeName      = 'G:'
   DestinationComputerName  = 'SRV2.Reskit.Org' 
   DestinationVolumeName    = 'F:'
@@ -117,13 +117,13 @@ $TSTHT = @{
 Test-SRTopology @TSTHT
 
 # 9. View the Report
-$File = Get-ChildItem c:\foo\testsr* | 
+$File = Get-ChildItem C:\Foo\testsr* | 
           Sort-Object -Property LastWriteTime -Descending |
-            Select-Object -First 1.
+            Select-Object -First 1
 
 Start-Process -Filepath $File
 
-# 10. Create an SR Replica
+# 10. Create an SR Replica Partnership
 $SRHT = @{
   SourceComputerName       = 'SRV1'
   SourceRGName             = 'SRV1RG'
@@ -160,7 +160,7 @@ $SRHT2 = @{
 Set-SRPartnership @SRHT2
 
 
-# 14 View SR Partnership on SRV1
+# 14. View SR Partnership on SRV1
 Get-SRPartnership
 
 # 15. Examine the same drives remotely on SRV2

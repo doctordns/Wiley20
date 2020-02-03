@@ -1,21 +1,17 @@
-﻿#  5.3 - Create SOFS
+﻿#  6.3 - Create SOFS
 # This recipe is run on FS1, but involves FS2 and SRV2
 # ISCSI initiator is setup on FS1 
 # ISCSI target setup on SRV2
 
-# 0. Setup FS2 to support ISCSI
+# 1. Setup FS2 to support ISCSI
 # Adjust the iSCSI service to auto start, then start the service and reboot.
-$SB2 = {
-  Install-Module -Name WindowsCompatibility -Force
+$SB1 = {
   Set-Service MSiSCSI -StartupType 'Automatic'
   Start-Service MSiSCSI
-  # Add Multipath IO to FS2
-  Install-WindowsFeature -Name Multipath-IO -IncludeManagementTools
 }
 Invoke-Command -ComputerName FS2 -ScriptBlock $SB1 | Out-Null
-Restart-Computer -ComputerName FS2 -Force
 
- # After the reboot, login as admin and setup portal to SRV2
+ # 2. Setup iSCSI portal to SRV2
  $SB2 = {
    $PHT = @{
      TargetPortalAddress     = 'SRV2.Reskit.Org'
@@ -33,18 +29,14 @@ Restart-Computer -ComputerName FS2 -Force
     $ISD =  Get-Disk | 
       Where-Object BusType -eq 'iscsi'
       $ISD | 
-      Set-Disk -IsOffline  $False
-    $ISD | 
-      Set-Disk -Isreadonly $False
+        Set-Disk -IsOffline  $False
+      $ISD | 
+        Set-Disk -Isreadonly $False
 }
 Invoke-Command -ComputerName FS2 -ScriptBlock $SB2 | Out-Null
 
-
-######   Start Here
-
-
-# 1. Adding clustering features to FS1/FS1
-Import-Winmodule ServerManager
+# 3. Adding clustering features to FS1/FS1
+Import-Module ServerManager -WarningAction SilentlyContinue
 $IHT = @{
   Name                    = 'Failover-Clustering'
   IncludeManagementTools = $true
@@ -52,11 +44,11 @@ $IHT = @{
 Install-WindowsFeature -ComputerName FS2 @IHT
 Install-WindowsFeature -ComputerName FS1 @IHT
 
-# 2. Restarting both FS1, FS2
+# 4. Restarting both FS1, FS2
 Restart-Computer -ComputerName FS2 -Force
 Restart-Computer -ComputerName FS1 -Force
 
-# 3. Testing the nodes
+# 3. Relogon to FS1 and testing the nodes
 Import-WinModule -Name FailoverClusters
 $CHECKOUTPUT = 'C:\Foo\Clustercheck'
 Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT

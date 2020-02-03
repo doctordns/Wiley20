@@ -36,11 +36,11 @@ catch {
     Out-Null
 }
 
-# 7. Display the Sales Group
+# 7. Displaying the Sales Group
 Get-ADGroup -Identity Sales
 
 
-# 8. Add explicit full control for Domain Admins
+# 8. Adding explicit full control for Domain Admins
 $AHT1 = @{
   Path         = 'C:\Secure1'
   Account      = 'Reskit\Domain Admins' 
@@ -48,7 +48,7 @@ $AHT1 = @{
 }
 Add-NTFSAccess @AHT1
 
-# 9. Remove builtin\users access from secure.txt file
+# 9. Remove Builtin\Users access from Secure.Txt file
 $AHT2 = @{
   Path         = 'C:\Secure1\Secure.Txt'
   Account      = 'Builtin\Users' 
@@ -57,7 +57,7 @@ $AHT2 = @{
 
 Remove-NTFSAccess @AHT2
 
-# 10. Remove inherited rights for the folder:
+# 10. Remove inherited rights for the folder
 $IRHT1 = @{
   Path                       = 'C:\Secure1'
   RemoveInheritedAccessRules = $True

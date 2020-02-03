@@ -1,4 +1,4 @@
-# 5.4 - Creating/Using an iSCSI Target
+# 6.2 - Creating/Using an iSCSI Target
 # Uses FS1. FS2, and SRV2
 # Starts on VMhost, then SRV2, and finished on FS1
 
@@ -11,13 +11,12 @@ Stop-VM -VMName SRV2
 $VM = Get-VM -VMName SRV2
 $Par = Split-Path -Path $VM.HardDrives[0].Path
 # Create a new VHD for S drive
-$NewPath3 = Join-Path -Path $par -ChildPath SDrive.VHDX
+$NewPath3 = Join-Path -Path $Par -ChildPath SDrive.VHDX
 $D4 = New-VHD -Path $NewPath3 -SizeBytes 128GB -Dynamic
 # Work out next free slot on Controller 0
-$Free = Get-VMScsiController -VMName SRV2 | 
-  Select-Object -ExpandProperty Drives |
-    Measure-Object |
-      Select-Object -ExpandProperty Count
+$Free = (Get-VMScsiController -VMName SRV2 |
+          Select-Object -First 1 | 
+            Select-Object -ExpandProperty Drives).count
 # Add new disk to VM
 $HDHT = @{ 
   Path               = $NewPath3
@@ -33,13 +32,14 @@ Start-VM -VMName SRV2
 # Once SRV2 is up and running, 
 # log into SRV2 as Administrator and create a new S: volume on the new disk
 # Initialize the disk
-Get-Disk | 
-  Where-Object PartitionStyle -eq Raw |
+$NewDisk = Get-Disk | 
+             Where-Object PartitionStyle -eq Raw 
+$NewDisk | 
     Initialize-Disk -PartitionStyle GPT  
     
-# Create a s: volume in disk 3
+# Create a S: volume in newly added disk
 $NVHT1 = @{
-  DiskNumber   = 3 
+  DiskNumber   = $NewDisk.Number
   FriendlyName = 'iSCSI' 
   FileSystem   = 'NTFS' 
   DriveLetter  = 'S'
@@ -52,9 +52,8 @@ New-Volume @NVHT1
 
 # Run this on SRV2
 
-# 1. Instalubg the iSCSI target feature on SRV2
-Install-Module -Name WindowsCompatibility -Force
-Import-WinModule ServerManager
+# 1. Installing the iSCSI target feature on SRV2
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature FS-iSCSITarget-Server -IncludeManagementTools
 
 # 2. Exploring iSCSI target server settings:
@@ -70,7 +69,7 @@ $NIHT = @{
 New-Item @NIHT | Out-Null
 
 # 4. Creating an iSCSI virtual disk
-Import-WinModule -Name IscsiTarget
+Import-Module -Name IscsiTarget
 $LP = 'S:\iSCSI\SalesData.Vhdx'
 $LN = 'SalesTarget'
 $VDHT = @{
@@ -94,49 +93,42 @@ Add-IscsiVirtualDiskTargetMapping -TargetName $LN -Path $LP
 ## Run remaining on FS1 (iSCSI initiator system)
 ##
 
-
 # 7. Configuring the iSCSI service to auto start, then start the service 
-Install-Module WindowsCompatibility -Force
 Set-Service MSiSCSI -StartupType 'Automatic'
 Start-Service MSiSCSI
 
-# 8. Adding Multipath IO to FS1
-Import-WinModule -Name ServerManager
-Install-WindowsFeature -Name Multipath-IO -IncludeManagementTools
-Restart-Computer -ComputerName FS1 -Force
-
-# 9. After reboot, Setup portal to SRV2
-Import-Winmodule -Name Iscsi
+# 8. Setup portal to SRV2
+Import-Module -Name Iscsi -WarningAction SilentlyContinue
 $PHT = @{
   TargetPortalAddress     = 'SRV2.Reskit.Org'
   TargetPortalPortNumber  = 3260
 }
 New-IscsiTargetPortal @PHT
                    
-# 10. Find and view the SalesTarget on portal
+# 9. Find and view the SalesTarget on portal
 $Target  = Get-IscsiTarget 
 $Target 
 
-# 11. Connecting to the target on SRV2
+# 10. Connecting to the target on SRV2
 $CHT = @{
   TargetPortalAddress = 'SRV2.Reskit.Org'
   NodeAddress         = $Target.NodeAddress
 }
 Connect-IscsiTarget  @CHT
                     
-# 12. Viewing iSCSI disk from FST on SRV2
+# 11. Viewing iSCSI disk from FST on SRV2
 $ISD =  Get-Disk | 
   Where-Object BusType -eq 'iscsi'
 $ISD | 
   Format-Table -AutoSize
 
-# 13. Turn disk online and make R/W
+# 12. Turn disk online and make R/W
 $ISD | 
   Set-Disk -IsOffline  $False
 $ISD | 
-  Set-Disk -Isreadonly $False
+  Set-Disk -IsReadOnly $False
 
-# 14. Formatting the volume on FS1
+# 13. Formatting the iSCSI volume on FS1
 $NVHT = @{
   FriendlyName = 'SalesData'
   FileSystem   = 'NTFS'
@@ -145,10 +137,10 @@ $NVHT = @{
 $ISD | 
   New-Volume @NVHT
   
-# 15. Using the iSCSI drive from FS1
+# 14. Using the iSCSI drive from FS1
 New-Item -Path S:\  -Name SalesData -ItemType Directory |
   Out-Null
-'Testing 1-2-3' | Out-File -FilePath S:\SalesData\Test.Txt
+'Testing iSCSI 1-2-3' | Out-File -FilePath S:\SalesData\Test.Txt
 Get-ChildItem S:\SalesData
 
 ####################

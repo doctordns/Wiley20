@@ -26,7 +26,7 @@ $FSHT =  @{
 }
 New-FsrmFileScreen @FSHT
 
-# 5. Test Files screen by copying notepad.exe
+# 5. Test file screen by copying notepad.exe
 $FSTHT = @{
   Path        = "$Env:windir\notepad.exe"
   Destination = 'C:\FileScreen\notepad.exe'
@@ -66,10 +66,10 @@ $FSRMSHT = @{
 Set-FsrmSetting @FSRMSH
 
 
-# 7. Re-test the file screen to check the the action
+# 9. Re-test the file screen to check the the action
 Copy-Item @FSTHT
 
-# 8. View File Screen Email
+# 10. View File Screen Email
 Get-FsrmSetting | WHERE-Object NAME -MATCH 'NotificationLimit'
 
 View from Outlook
