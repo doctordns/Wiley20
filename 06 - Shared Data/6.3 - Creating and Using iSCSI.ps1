@@ -1,11 +1,11 @@
-# 6.2 - Creating/Using an iSCSI Target
+# 6.3 - Creating/Using an iSCSI Target
 # Uses FS1. FS2, and SRV2
 # Starts on VMhost, then SRV2, and finished on FS1
 
 
 # 0. Add additional disk to hold iSCSI VHD to SRV2 VM
 #    Run this on the Hyper-V VM Host in an elevated console
-# Stop the VM
+# Stop the SRV2 VM
 Stop-VM -VMName SRV2
 # Get File location for the disk in this VM
 $VM = Get-VM -VMName SRV2
@@ -32,6 +32,8 @@ Start-VM -VMName SRV2
 # Once SRV2 is up and running, 
 # log into SRV2 as Administrator and create a new S: volume on the new disk
 # Initialize the disk
+
+# Find the new disk
 $NewDisk = Get-Disk | 
              Where-Object PartitionStyle -eq Raw 
 $NewDisk | 
@@ -48,7 +50,7 @@ New-Volume @NVHT1
 ################
 
  
-#   START OF SCRIPT
+#   START OF MAIN SCRIPT
 
 # Run this on SRV2
 
@@ -57,7 +59,7 @@ Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature FS-iSCSITarget-Server -IncludeManagementTools
 
 # 2. Exploring iSCSI target server settings:
-Import-WinModule -Name  IscsiTarget
+Import-Module -Name  IscsiTarget -WarningAction SilentlyContinue
 Get-IscsiTargetServerSetting
 
 # 3. Creating a folder on SRV2 to hold a iSCSI virtual disk
@@ -68,10 +70,10 @@ $NIHT = @{
 }
 New-Item @NIHT | Out-Null
 
-# 4. Creating an iSCSI virtual disk
-Import-Module -Name IscsiTarget
-$LP = 'S:\iSCSI\SalesData.Vhdx'
-$LN = 'SalesTarget'
+# 4. Create an iSCSI virtual disk
+Import-Module -Name IscsiTarget -WarningAction SilentlyContinue
+$LP   = 'S:\iSCSI\SalesData.Vhdx'
+$LN   = 'SalesTarget'
 $VDHT = @{
   Path        = $LP
   Description = 'LUN For Sales'

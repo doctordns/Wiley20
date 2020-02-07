@@ -48,24 +48,24 @@ Install-WindowsFeature -ComputerName FS1 @IHT
 Restart-Computer -ComputerName FS2 -Force
 Restart-Computer -ComputerName FS1 -Force
 
-# 3. Relogon to FS1 and testing the nodes
-Import-WinModule -Name FailoverClusters
+# 5. Testing Cluster Nodes
+Import-Module -Name FailoverClusters
 $CHECKOUTPUT = 'C:\Foo\Clustercheck'
 Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT
 
-# 4. View Validation test results
+# 6. View Validation test results
 $COFILE = "$CheckOutput.htm"
 Invoke-Item  -Path $COFILE
 
-# 5.  Creating The Cluster
+# 7.  Creating The Cluster
 $NCHT = @{
   Name          = 'FS'
-  Node          = 'FS1.reskit.org', 'FS2.reskit.org'
+  Node          = 'FS1.Reskit.Org', 'FS2.Reskit.Org'
   StaticAddress = '10.10.10.100'
 }
 New-Cluster @NCHT | Out-Null
 
-# 6. Ensuring iSCSI disks are connected
+# 8. Ensuring iSCSI disks are connected
 $SB = {
   Get-ISCSITarget | 
   Connect-IscsiTarget -ErrorAction SilentlyContinue
@@ -73,24 +73,31 @@ $SB = {
 Invoke-Command  -ComputerName FS1 -ScriptBlock $SB
 Invoke-Command  -ComputerName FS2 -ScriptBlock $SB
 
-# 7. Viewing the iSCSI Target
+# 9. Viewing the iSCSI Target
 Get-ClusterAvailableDisk 
 
-# 8. Adding disk to the cluster
+# 10. Adding iSCSI disk to the cluster
 Get-Disk | 
   Where-Object BusType -eq 'iSCSI'| 
     Add-ClusterDisk
 
-# 9. Add disk to CSV
-$CD = Get-ClusterResource | 
-        Where-Object OwnerGroup -Match 'Available'
-Add-ClusterSharedVolume -Name $CD.Name
+# 12. Add file server role
+$ACFSHT = {
+  Cluster = 'FS'
+  Name    = 'RKFS'
+  Storage = 'Cluster Disk 1' 
+}
+Add-ClusterFileServerRole  @ACFSHT
 
-# 10. Create a folder and give Sales Access to the folder
+
+# 12. Create a folder and give Sales Access to the folder
 $HvFolder = 'C:\ClusterStorage\Volume1\HVData'
 New-Item -Path $HvFolder -ItemType Directory |
               Out-Null
-Add-NTFSAccess -Path $HvFolder -Account reskit\Sales -AccessRights FullControl
+Add-NTFSAccess -Path $HvFolder -Account Reskit\Sales -AccessRights FullControl
+
+# 13. Ensure CSV managed by node FS1
+Move-ClusterSharedVolume -Name 'Cluster Disk 1' -Node 'FS1'
 
 # 11. Add SOFS role to Cluster
 Import-WinModule -Name ServerManager
