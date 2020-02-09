@@ -51,7 +51,7 @@ Restart-Computer -ComputerName FS1 -Force
 # 5. Testing Cluster Nodes
 Import-Module -Name FailoverClusters
 $CHECKOUTPUT = 'C:\Foo\Clustercheck'
-Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT
+Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT | Out-Null
 
 # 6. View Validation test results
 $COFILE = "$CheckOutput.htm"
@@ -81,30 +81,22 @@ Get-Disk |
   Where-Object BusType -eq 'iSCSI'| 
     Add-ClusterDisk
 
-# 12. Add file server role
-$ACFSHT = {
-  Cluster = 'FS'
-  Name    = 'RKFS'
-  Storage = 'Cluster Disk 1' 
-}
-Add-ClusterFileServerRole  @ACFSHT
+# 11. Move disk into CSV
+Add-ClusterSharedVolume -Name 'Cluster Disk 1'
+
+# 12. Add SOFS role to Cluster
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
+Add-WindowsFeature File-Services -IncludeManagementTools | Out-Null
+Add-ClusterScaleOutFileServerRole -Cluster RKFS
 
 
-# 12. Create a folder and give Sales Access to the folder
+# 13. Create a folder and give Sales Access to the folder
 $HvFolder = 'C:\ClusterStorage\Volume1\HVData'
 New-Item -Path $HvFolder -ItemType Directory |
               Out-Null
 Add-NTFSAccess -Path $HvFolder -Account Reskit\Sales -AccessRights FullControl
 
-# 13. Ensure CSV managed by node FS1
-Move-ClusterSharedVolume -Name 'Cluster Disk 1' -Node 'FS1'
-
-# 11. Add SOFS role to Cluster
-Import-WinModule -Name ServerManager
-Add-WindowsFeature File-Services -IncludeManagementTools
-Add-ClusterScaleOutFileServerRole -Cluster FS | Out-Null
-
-# 12. Adding a Continuously Available share to the entire cluster
+# 14. Adding a Continuously Available share to the entire cluster
 $SMBSHT2 = @{
   Name                  = 'SalesHV'
   Path                  = $HvFolder
@@ -112,10 +104,15 @@ $SMBSHT2 = @{
   FullAccess            = 'Reskit\Sales'
   ContinuouslyAvailable = $true 
 }              
-New-SMBShare  @SMBSHT2
+New-SMBShare  @SMBSHT2 
 
-# 13. View Shares
+# 15. View Shares on FS1 and FS2
 Get-SmbShare
+Invoke-Command -ComputerName FS2 -ScriptBlock {Get-SmbShare}
+
+
+
+
 
 
 <#  Remove it
