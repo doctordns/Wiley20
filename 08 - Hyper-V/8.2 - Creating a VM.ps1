@@ -1,22 +1,43 @@
-# Recipe 11.2 - Creating a VM
+# 8.2 - Creating a Hyper-V VM
 
-# 1. Set up the VM name and paths for this recipe:
-$VMname      = 'PSDirect'
-$VMLocation  = 'C:\Vm\VMs'
-$VHDlocation = 'C:\Vm\Vhds'
-$VhdPath     = "$VHDlocation\PSDirect.Vhdx"
-$ISOPath     = 'C:\builds\en_windows_server_2019_x64_dvd_4cb967d8.iso'
+# Run on HV1 after setting up as in 8.1
 
-# 2.    Create a new VM:
+# 1. Set up the VM name and paths
+$VMname      = 'HVDirect'
+$VMLocation  = 'C:\VM\VMs'
+$VHDlocation = 'C:\VM\Vhds'
+$VHDPath     = "$VHDlocation\HVDirect.Vhdx"
+$ISOPath     = 'C:\ISO\WinSrv2019.iso'
+
+# 2. Verify drive contents
+If (-Not (Test-Path -Path $ISOPath)) {
+    Throw "ISO Image [$ISOPath] NOT found"
+}
+
+# 3. Import the DISM Module
+Import-Module -Name DISM -WarningAction SilentlyContinue
+
+# 4. Mount ISO Image 
+Mount-DiskImage -ImagePath $ISOPath
+
+# 5. Get details and Display ISO image contents and Dismount the ISO
+$ISOImage = Get-DiskImage -ImagePath $ISOPath | Get-Volume
+$ISODrive = [string] $ISOImage.DriveLetter + ":"
+Get-WindowsImage -ImagePath $ISODrive\sources\install.wim | 
+  Format-Table -Property ImageIndex, Imagename, Imagedescription -Wrap
+  
+Dismount-DiskImage -ImagePath $ISOPath | Out-Null
+
+# 6.  Create a new VM:
 New-VM -Name $VMname -Path $VMLocation -MemoryStartupBytes 1GB
 
-# 3. Create a virtual disk file for the VM:
+# 7. Create a virtual disk file for the VM
 New-VHD -Path $VhdPath -SizeBytes 128GB -Dynamic | Out-Null
 
-# 4. Add the virtual hard drive to the VM:
+# 8. Add the virtual hard drive to the VM
 Add-VMHardDiskDrive -VMName $VMname -Path $VhdPath
 
-# 5. Set ISO image in the VM's DVD drive:
+# 9. Set ISO image in the VM's DVD drive
 $IHT = @{
   VMName           = $VMName
   ControllerNumber = 1
@@ -24,8 +45,11 @@ $IHT = @{
 }
 Set-VMDvdDrive @IHT
 
-# 6. Start the VM:
+# 10. Start the VM:
 Start-VM -VMname $VMname 
 
-# 7. View the results:
-Get-VM -Name $VMname
+# 11 Complete a manual Installation
+#    DO IT VIA THE GUI
+
+# 12. View the results
+Get-VM -Name $VMname 

@@ -68,3 +68,24 @@ Set-SmbServerConfiguration -EnableSMB1Protocol $true `
                            -AnnounceServer $True
 Restart-Service lanmanserver
 #>
+
+
+
+
+# 6. Turn on Sserver announcements
+$SHT3 = @{
+    ServerHidden   = $TRUE
+    AnnounceServer = $FALSE
+    Confirm        = $false
+    AnnounceComment = "Have A Nice Day!"
+}
+Set-SmbServerConfiguration @SHT3
+
+
+$t1 = 56507.941
+$t2 = 57229.408
+$t3 = 57948.166
+$T4 = 58666.928
+$T4-$t3
+$T3-$t2
+$T2-$t1

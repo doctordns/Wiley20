@@ -1,4 +1,4 @@
-+# Setup-VSCodeEvironment.ps1
+# Setup-VSCodeEvironment.ps1
 # (c) 2020 Thomas Lee (DoctorDNS@Gmail.Com)
 
 # This Gist adds the Concordia Code font to Windows and configures VS Code
@@ -59,44 +59,24 @@ $Shortcut.TargetPath = $SourceFileLocation
 $Shortcut.Save()
 
 $XML = @'
-<Activity
-    x:Class="Microsoft.PowerShell.DynamicActivities.Activity_542011301"
-    xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
-    xmlns:sad="clr-namespace:System.Activities.Debugger;assembly=System.Activities"
-    xmlns:local="clr-namespace:Microsoft.PowerShell.DynamicActivities"
-    xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
-    mva:VisualBasic.Settings="Assembly references and imported namespaces serialized as XML namespaces"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ns0="clr-namespace:System;assembly=mscorlib"
-    xmlns:ns1="clr-namespace:Microsoft.PowerShell.Utility.Activities;assembly=Microsoft.PowerShell.Utility.Activities"
-    xmlns:ns2="clr-namespace:Microsoft.PowerShell.Activities;assembly=Microsoft.PowerShell.Activities"
-    xmlns:ns3="clr-namespace:System.Activities;assembly=System.Activities"
-    xmlns:ns4="clr-namespace:System.Management.Automation;assembly=System.Management.Automation"
-    >
-    <Sequence>
-        <ns2:SetPSWorkflowData>
-            <ns2:SetPSWorkflowData.OtherVariableName>Position</ns2:SetPSWorkflowData.OtherVariableName>
-            <ns2:SetPSWorkflowData.Value>
-                <ns3:InArgument x:TypeArguments="ns0:Object">
-                    <ns2:PowerShellValue x:TypeArguments="ns0:Object" Expression="'2:1:wf1'" />
-                </ns3:InArgument>
-            </ns2:SetPSWorkflowData.Value>
-        </ns2:SetPSWorkflowData>
-        <ns1:WriteOutput>
-            <ns1:WriteOutput.NoEnumerate>[System.Management.Automation.SwitchParameter.Present]</ns1:WriteOutput.NoEnumerate>
-            <ns1:WriteOutput.InputObject>
-                <InArgument x:TypeArguments="ns4:PSObject[]">
-                    <ns2:PowerShellValue x:TypeArguments="ns4:PSObject[]" Expression="&quot;Have a nice day&quot;" />
-                </InArgument>
-            </ns1:WriteOutput.InputObject>
-        </ns1:WriteOutput>
-        <Sequence.Variables>
-            <Variable Name="WorkflowCommandName" x:TypeArguments="ns0:String" Default = "wf1" />
-        </Sequence.Variables>
-    </Sequence>
-</Activity>
+<?xml version="1.0" encoding="utf-8"?>
+<LayoutModificationTemplate
+    xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"
+    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout"
+    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout"
+    xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout"
+    Version="1">
+  <CustomTaskbarLayoutCollection>
+    <defaultlayout:TaskbarLayout>
+      <taskbar:TaskbarPinList>
+        <taskbar:DesktopApp DesktopApplicationLinkPath="c:\foo\vscode.lnk" />
+        <taskbar:DesktopApp DesktopApplicationLinkPath="c:\foo\pwsh.lnk" />
+      </taskbar:TaskbarPinList>
+    </defaultlayout:TaskbarLayout>
+  </CustomTaskbarLayoutCollection>
+</LayoutModificationTemplate>
 '@
-$XML | out-file -FilePath c:\foo\foo.
+$XML | out-file -FilePath c:\foo\layout.xml
 
 
 # 5. Import a startlayut.XML file

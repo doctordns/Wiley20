@@ -1,27 +1,35 @@
-﻿# Recipe 11.7 - Implementing nested Hyper-V
+﻿# 8.6 - Implementing nested Hyper-V
 #
-# Run on PSDirect
+# Run on HV1
 
-#  1. Stop VM1 VM:
-Stop-VM -VMName PSDirect
+#  1. Stop HVDirect VM
+$VMName = 'HVDIRECT'
+Stop-VM -VMName $VMName
 
-# 2. Change and view the VM's processor to support virtualization:
+# 2. Change the VM's processor to support virtualization
+$VMName = 'HVDIRECT'
 $VMHT = @{
-  VMName                         = ‘PSDirect’ 
+  VMName                         = $VMName
   ExposeVirtualizationExtensions = $true
+  Count                          = 2
 }
 Set-VMProcessor @VMHT
-Get-VMProcessor -VMName PSDirect |
+Get-VMProcessor -VMName $VMName |
     Format-Table -Property Name, Count,
                            ExposeVirtualizationExtensions
 
-# 3. Start the VM1 VM:
-Start-VM -VMName PSDirect
-Wait-VM  -VMName PSDirect -For Heartbeat
-Get-VM   -VMName PSDirect
+# 3. Enable MAC Address spoofing on the virtual NIC                           
+Get-VM -VMName $VMName | 
+  Get-VMNetworkAdapter | 
+    Set-VMNetworkAdapter -MacAddressSpoofing On
 
-# 4. Create credentials 
-$User = 'Wolf\Administrator'
+# 4. Restart the VM
+Start-VM -VMName $VMName
+Wait-VM  -VMName $VMName -For Heartbeat
+Get-VM   -VMName $VMName
+
+# 5. Create credentials for HVDirect
+$User = 'Reskit\Administrator'
 $PHT = @{
   String      = 'Pa$$w0rd'
   AsPlainText = $true
@@ -31,33 +39,27 @@ $PSS  = ConvertTo-SecureString @PHT
 $Type = 'System.Management.Automation.PSCredential'
 $CredRK = New-Object -TypeName $Type -ArgumentList $User,$PSS
 
-# 5. Create a script block for remote execution
+# 6.  Install Hyper-V inside the HVDirect VM
 $SB = {
   Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 }
-
-# 6. Install Hyper-V inside the PSDirect VM
-$Session = New-PSSession -VMName PSDirect -Credential $CredRK
-$IHT = @{
-  Session     = $Session
+$IHT  = @{
+  VMName      =  $VMName
   ScriptBlock = $SB 
+  Credential  = $CredRK
 }
 Invoke-Command @IHT
 
-# 7. Restart the VM to finish adding Hyper-V:
-Stop-VM  -VMName PSDirect
-Start-VM -VMName PSDirect
-Wait-VM  -VMName PSDirect -For IPAddress
-Get-VM   -VMName PSDirect
+# 7. Restart the VM to finish adding Hyper-V
+Stop-VM  -VMName $VMName
+Start-VM -VMName $VMName
+Wait-VM  -VMName $VMName -For IPAddress
+Get-VM   -VMName $VMName
 
-# 8. Create a nested VM:
-$SB2 = {
-        $VMname = 'NestedVM'
-        New-VM -Name $VMname -MemoryStartupBytes 1GB
+# 8. Check Hyper-V inside HVDirect VM
+$SB = {
+  Get-WindowsFeature *Hyper* |
+    Format-Table Name, InstallState
+  Get-Service VM*
 }
-$IHT2 = @{
-  VMName = 'PSDirect'
-  ScriptBlock = $SB2
-}
-Invoke-Command @IHT2 -Credential $CredRK
-
+Invoke-Command -VMName $VMName -ScriptBlock $SB -Credential $CredRK

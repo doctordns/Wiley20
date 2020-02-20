@@ -1,34 +1,36 @@
-﻿# Recipe 11.9 - Configuring VM and storage movement
+﻿# 8.9 - Configuring VM and storage movement
+
+# Run on HV1
 
 # 1. View the PSDirect VM on HV1 and verify that it is turned off and not saved
-Get-VM -Name PSDirect -Computer HV1
+Get-VM -Name HVDirect -Computer HV1
 
 # 2. Get the VM configuration location 
-(Get-VM -Name PSDirect).ConfigurationLocation 
+(Get-VM -Name HVDirect).ConfigurationLocation 
 
 # 3. Get Hard Drive locations
-Get-VMHardDiskDrive -VMName PSDirect | 
+Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path
 
 # 4. Move the VM's to the C\PSDirectNew folder:
 $MHT = @{
-  Name                   = 'PSDirect'
-  DestinationStoragePath = 'C:\PSDirectNew'
+  Name                   = 'HVDirect'
+  DestinationStoragePath = 'C:\HVD_NEW'
 }
 Move-VMStorage @MHT
 
 # 5. View the configuration details after moving the VM's storage:
-(Get-VM -Name PSDirect).ConfigurationLocation
-Get-VMHardDiskDrive -VMName PSDirect | 
+(Get-VM -Name HVDirect).ConfigurationLocation
+Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path
   
-# 6. Get the VM details for VMs from HV2:
+# 6. Get the VM details for VMs from HV2
 Get-VM -ComputerName HV2
 
-# 7. Enable VM migration from both HV1 and HV2:
+# 7. Enable VM migration from both HV1 and HV2
 Enable-VMMigration -ComputerName HV1, HV2
 
-# 8. Configure VM Migration on both hosts:
+# 8. Configure VM Migration on both hosts
 $SVHT = @{
   UseAnyNetworkForMigration                 = $true
   ComputerName                              = 'HV1', 'HV2'
@@ -40,7 +42,7 @@ Set-VMHost @SVHT
 # 9. Move the VM to HV2
 $Start = Get-Date
 $VMHT = @{
-    Name                   = 'PSDirect'
+    Name                   = 'HVDirect'
     ComputerName           = 'HV1'
     DestinationHost        = 'HV2'
     IncludeStorage         =  $true
@@ -48,7 +50,7 @@ $VMHT = @{
 }
 Move-VM @VMHT
 $Finish = Get-Date
-($Finish - $Start)
+
 
 # 10. Display the time taken to migrate
 $OS = "Migration took: [{0:n2}] minutes"

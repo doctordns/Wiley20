@@ -1,64 +1,60 @@
-# Recipe 11-1 - Installing and configuring Hyper-V
-# Run on CL1
+# 8.1 - Installing and configuring Hyper-V
 
-# 1. From CL1, install the Hyper-V feature on HV1, HV2
-$Sb = {
-  Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
+# Run on HV1
+
+# If HV1 is a VM, configure it
+# On the Hyper-V Host running HV1
+Stop-VM -VMName HV1
+# Enable nested virtualization and set processor count for HV1
+$VMHT = @{
+  VMName                         = 'HV1' 
+  ExposeVirtualizationExtensions = $true
+  Count                          = 4
 }
-Invoke-Command -ComputerName HV1, HV2 -ScriptBlock $Sb
-
-# 2. Reboot the servers to complete the installation
-Restart-Computer -ComputerName HV1, HV2 -Force 
-
-# 3. Create a PSSession with both HV Servers (after reboot)
-$S = New-PSSession HV1, HV2
-
-# 4. Create and set the location for VMs and VHDs on HV1 and HV2
-#  then view results
-$Sb = {
-    New-Item -Path C:\Vm -ItemType Directory -Force |
-        Out-Null
-    New-Item -Path C:\Vm\Vhds -ItemType Directory -Force |
-        Out-Null
-    New-Item -Path C:\Vm\VMs -ItemType Directory -force |
-        Out-Null
-    Get-ChildItem -Path C:\Vm }
-Invoke-Command -ScriptBlock $Sb -Session $S
-
-# 5. Set default paths for Hyper-V VM hard disks and
-#    VM configuration information
-$SB = {
-  $VMs  = 'C:\Vm\Vhds'
-  $VHDs = 'C:\Vm\VMs\Managing Hyper-V'
-  Set-VMHost -ComputerName Localhost -VirtualHardDiskPath $VMs
-  Set-VMHost -ComputerName Localhost -VirtualMachinePath $VHDs
+Set-VMProcessor @VMHT
+# Set VM Memory for HV1
+$VMHT = [ordered] @{
+    VMName               = 'HV1'
+    DynamicMemoryEnabled = $true
+    MinimumBytes         = 512MB
+    StartupBytes         = 1GB
+    MaximumBytes         = 2GB
 }
-Invoke-Command -ScriptBlock $SB -Session $S
+Set-VMMemory @VMHT
+Start-VM -VMName HV1
 
-# 5. Setup NUMA spanning
-$SB = {
-  Set-VMHost -NumaSpanningEnabled $true
+#  Start of Script
+
+
+# 1. Install the Hyper-V feature on HV1
+Import-Module -Name Servermanager -WarningAction SilentlyContinue
+Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
+
+# 2. Reboot HV1 to complete the installation
+Restart-Computer -ComputerName HV1
+
+# 3. Create new folders to hold VM details and disks
+$VMS  = 'C:\VM\VMS'
+$VHDS = 'C:\VM\VHDS\'
+New-Item -Path $VMS  -ItemType Directory -Force | Out-Null
+New-Item -Path $VHDS -ItemType Directory -force | Out-Null
+
+# 4. Build Hash Table to Configure the VM Host
+$VMCHT = @{
+# Where to store VM configuration files  
+  VirtualMachinePath  = $VMS
+# Where to store VHDx files
+  VirtualHardDiskPath = $VHDS
+# Enable NUMA spanning
+  NumaSpanningEnabled = $true
+# Enable Enhanced Session Mode
+  EnableEnhancedSessionMode = $true
+# Specify Resource metering save interval
+  ResourceMeteringSaveInterval  = (New-TimeSpan -Hours 2 )
 }
-Invoke-Command -ScriptBlock $SB -Session $S
+Set-VMHost @VMCHT
 
-# 6. Set up EnhancedSessionMode
-$SB = {
- Set-VMHost -EnableEnhancedSessionMode $true
-}
-Invoke-Command -ScriptBlock $SB -Session $S
-
-# 7. Setup host resource metering on HV1, HV2
-$SB = {
- $RMInterval = New-TimeSpan -Hours 0 -Minutes 15
-  Set-VMHost -ResourceMeteringSaveInterval $RMInterval
-}
-Invoke-Command -ScriptBlock $SB -Session $S
-
-
-# 8. Review key VMHost settings:
-$SB = {
-  Get-VMHost 
- }
-$P = 'Name', 'V*Path','Numasp*', 'Ena*','RES*'
-Invoke-Command -Scriptblock $SB -Session $S |
-  Format-Table -Property $P
+# 5. Review key VMHost settings:
+Get-VMHost  |
+  Format-Table -Property 'Name', 'V*Path','Numasp*', 'Ena*','RES*'
+  
