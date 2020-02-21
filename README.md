@@ -35,12 +35,13 @@ Prior to publication - they are definitely a work in progress and can change.
 Use at your own risk.
 
 Once the book is published and the Wiley site URL known, a release is declared.
-Post publication, updates to this repository are based on errors that are discovered.And of course, use at your own risk.
+Post publication, updates to this repository are based on errors that are discovered.
+And of course, use at your own risk.
 
 This repository also contains a Goodies folder in which are some extra scripts that did not make the book. These are for you to play with.
 These 'goodies' also show things you can do with PowerShell that I did not have room for.
 I also provide scripts and snippets that help you work with the VM network used in this book.
-For example, there's a default profile for all the VM copies of VS Code and script to set this all up. 
+For example, there's a default profile for all the VM copies of VS Code and script to set this all up.
 Needless to say, use the goodies folder at your own risk
 
 ## Issues
