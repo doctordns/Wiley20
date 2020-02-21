@@ -42,7 +42,7 @@ This repository also contains a Goodies folder in which are some extra scripts t
 These 'goodies' also show things you can do with PowerShell that I did not have room for.
 I also provide scripts and snippets that help you work with the VM network used in this book.
 For example, there's a default profile for all the VM copies of VS Code and script to set this all up.
-Needless to say, use the goodies folder at your own risk
+Needless to say, use the goodies folder at your own risk too.
 
 ## Issues
 
