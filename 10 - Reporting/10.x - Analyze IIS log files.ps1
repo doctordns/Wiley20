@@ -1,6 +1,7 @@
-﻿# Recipe 9.8 - Analyze IIS Log Files
+﻿# Recipe 10.x - Analyze IIS Log Files
 # 
 # Run from SRV1 after previous recipes have created log entries for SRV1
+# Not included in the book due to IIS not working well with PowerShell 7.
 
 # 1. Define the location of log files and a temporary file
 $LogFolder = 'C:\inetpub\logs\LogFiles\W3SVC1'
@@ -11,15 +12,15 @@ $LogTemp = "C:\inetpub\logs\LogFiles\W3SVC1\AllLogs.tmp"
 $Logs = @()                 # Create empty array
 # Remove the comment lines
 $LogFiles | 
-  ForEach { Get-Content $_ | 
+  ForEach-Object { Get-Content $_ | 
     Where-Object {$_ -notLike "#[D,F,S,V]*" } | 
-      Foreach { $Logs += $_ }  # add log entry to $Logs array
+      ForEach-Object { $Logs += $_ }  # add log entry to $Logs array
 }
 
 # 3. Build a better header
 $LogColumns = ( $LogFiles | 
                Select-Object -First 1 | 
-                 Foreach { Get-Content $_ | 
+                 ForEach-Object { Get-Content $_ | 
                    Where-Object {$_ -Like "#[F]*" } } )
 $LogColumns = $LogColumns -replace "#Fields: ", ""
 $LogColumns = $LogColumns -replace "-","" 
@@ -37,22 +38,22 @@ $Logs = Import-Csv -Path $LogTemp -Delimiter " "
 
 # 6. View Client IP addresses
 $Logs | 
-  Sort-Object -Property cip | 
+  Sort-Object -Property CIP | 
     Select-Object -Property CIP -Unique
 
 # 7. View User Agents used to communicate with SRV1
 $Logs | 
-  Sort-Object -property csUserAgent | 
+  Sort-Object -Property csUserAgent | 
     Select-Object -Property csUserAgent -Unique
 
 # 8. View frequency of each user agent
 $Logs | 
   Sort-Object -Property csUserAgent |
-    Group-Object csuseragent | 
-      Sort-object -Property Count -Desc | 
+    Group-Object csUserAgent | 
+      Sort-object -Property Count -Descending | 
         Format-Table -Property Count, Name
 
-# 9. Who is using what:
+# 9. Who is using what
 $Logs | 
   Select-Object -Property CIP, CSUserAgent -Unique |
     Sort-Object -Property CIP 
