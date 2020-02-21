@@ -4,10 +4,10 @@
 
 This repository holds the master scripts for Thomas Lee's PowerShell 7 book from Wiley.
 
-This site is, until publication, a work in progress. 
-The URL for the book is: https://www.amazon.com/PowerShell-7-Pros-Thomas-Lee/dp/1119644720
-There are likely errors and missing or extra content here. 
-Post publication should settle down!
+This site is, until publication, a work in progress.
+The URL for the book is: <https://www.amazon.com/PowerShell-7-Pros-Thomas-Lee/dp/1119644720>.
+There are likely errors and missing or extra content here.
+Post publication, things should settle down!
 
 ## What's In This Repository
 
@@ -46,4 +46,5 @@ Needless to say, use the goodies folder at your own risk too.
 
 ## Issues
 
-Please file issues on any problems found with the scripts here.
+Please file issues on any problems found with the scripts here. 
+I can fix what I know is not working for you.
