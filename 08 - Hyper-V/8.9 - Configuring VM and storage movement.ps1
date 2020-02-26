@@ -46,7 +46,7 @@ $VMHT = @{
     ComputerName           = 'HV1'
     DestinationHost        = 'HV2'
     IncludeStorage         =  $true
-    DestinationStoragePath = 'C:\PSDirect' # on HV2
+    DestinationStoragePath = 'C:\HVDirect' # on HV2
 }
 Move-VM @VMHT
 $Finish = Get-Date
@@ -57,14 +57,14 @@ $OS = "Migration took: [{0:n2}] minutes"
 ($os -f ($($finish-$start).TotalMinutes))
 
 # 11. Check the VMs on HV1
-Get-VM -ComputerName HV2
+Get-VM -ComputerName HV1
 
 # 12. Check the VMs on HV2
 Get-VM -ComputerName HV2
 
 # 13. Look at the details of the moved VM
-((Get-VM -Name PSDirect -Computer HV2).ConfigurationLocation)
-Get-VMHardDiskDrive -VMName PSDirect -Computer HV2  |
+((Get-VM -Name HVDirect -Computer HV2).ConfigurationLocation)
+Get-VMHardDiskDrive -VMName HVDirect -Computer HV2  |
   Format-Table -Property VMName, Path
 
 ###  Move it back (not for publication)

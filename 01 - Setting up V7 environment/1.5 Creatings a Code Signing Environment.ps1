@@ -1,7 +1,7 @@
 # 1.4 - Creating an Internal PowerShell Repository
 # 
 # Run from Cl1 - run in an elevated session
-# Uses self signed certitificate
+# Uses self signed Certificates
 
 # 1. Set Execution Policy to Remote Signed
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process 
@@ -41,12 +41,12 @@ Get-Content -Path $SignedFile |
 # 6. Copy the cert to the Trusted Root Store
 $CertStore = 'System.Security.Cryptography.X509Certificates.X509Store'
 $CertArgs  = 'Root','LocalMachine'
-$Store = New-Object -TypeName $CertStore` -ArgumentList $CertArgs
+$Store     = New-Object -TypeName $CertStore` -ArgumentList $CertArgs
 $Store.Open(‘ReadWrite’)
 $Store.Add($SignCert)
 $Store.Close()    
 
-# 7. Attempt to Sign the script
+# 7. Sign the script
 $SignCert = Get-ChildItem -Path Cert:\CurrentUser\my -CodeSigningCert
 Set-AuthenticodeSignature -FilePath $SignedFile -Certificate $SignCert |
     Format-Table -AutoSize -Wrap
