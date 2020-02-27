@@ -2,16 +2,16 @@
 #
 # Run on HV1 
 
-# 1. Get NIC details and any IP Address from the PSDirect VM
+# 1. Get NIC details and any IP Address from the HVDirect VM
 $VMNAME = 'HVDirect'
 Get-VMNetworkAdapter -VMName $VMNAME
 
 # 2. Create a credential 
-$RKAn   = 'Localhost\Administrator'
+$RKAN   = 'Localhost\Administrator'
 $PS     = 'Pa$$w0rd'
 $RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
 $T      = 'System.Management.Automation.PSCredential'
-$RKCred = New-Object -TypeName $T -ArgumentList $RKAn, $RKP
+$RKCred = New-Object -TypeName $T -ArgumentList $RKAN, $RKP
 
 # 3. Get NIC Details from inside the VM
 $VMHT = @{
