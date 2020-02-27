@@ -161,11 +161,11 @@ $SB3 = {
 }
 Invoke-Command -ComputerName HV2 -ScriptBlock $SB3
 
-# 14. View the status of VMs on HV1 and HV2 after failover stopped
+# 15. View the status of VMs on HV1 and HV2 after failover stopped
 Get-VM -ComputerName HV1
 Get-VM -ComputerName HV2
 
-# 15. Set Failover IP address for HVDIrect on HV2
+# 16. Set Failover IP address for HVDIrect on HV2
 $NAHT = @{
   IPv4Address            = '10.10.10.142'
   IPv4SubnetMask         = '255.255.255.0'
@@ -175,13 +175,13 @@ Get-VMNetworkAdapter -VMName HVDirect -ComputerName HV2 |
   Set-VMNetworkAdapterFailoverConfiguration @NAHT 
 Connect-VMNetworkAdapter -VMName HVDirect -SwitchName External
 
-# 16. Stop VM1 on HV2 prior to performing a planned failover
+# 17. Stop VM1 on HV2 prior to performing a planned failover
 Stop-VM HVdirect -ComputerName HV1
 
-# 17. Start VM failover from HV1
+# 18. Start VM failover from HV1
 Start-VMFailover -VMName HVDirect -ComputerName HV2 -Confirm:$false
 
-# 18. Complete the failover
+# 19. Complete the failover
 $CHT = @{
   VMName       = 'HVDirect'
   ComputerName = 'HV2'
@@ -189,15 +189,15 @@ $CHT = @{
 }
 Complete-VMFailover @CHT
 
-# 19. Start the replicated VM on HV1
+# 20. Start the replicated VM on HV1
 Start-VM -VMname HVDirect -ComputerName HV2
 Wait-VM -VMName HVDirect -For IPAddress
 
-# 20. See VMs on HV1 and HV2 after the planned failover
+# 21. See VMs on HV1 and HV2 after the planned failover
 Get-VM -ComputerName HV1
 Get-VM -ComputerName HV2
 
-# 21. Retest Migrated HVDirect VM
+# 22. Retest Migrated HVDirect VM
 $SB4 =@{
   VMName      = 'HVDirect'
   ScriptBlock = {hostname; ipconfig} 
