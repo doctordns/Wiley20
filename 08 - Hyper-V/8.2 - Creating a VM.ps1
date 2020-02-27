@@ -7,14 +7,14 @@ $VMname      = 'HVDirect'
 $VMLocation  = 'C:\VM\VMs'
 $VHDlocation = 'C:\VM\Vhds'
 $VHDPath     = "$VHDlocation\HVDirect.Vhdx"
-$ISOPath     = 'C:\ISO\WinSrv2019.iso'
+$ISOPath     = 'C:\ISO\WinSrv2019.ISO'
 
 # 2. Verify drive contents
 If (-Not (Test-Path -Path $ISOPath)) {
     Throw "ISO Image [$ISOPath] NOT found"
 }
 
-# 3. Import the DISM Module
+# 3. Import the DISM Module and Display the OSs on this ISO
 Import-Module -Name DISM -WarningAction SilentlyContinue
 
 # 4. Mount ISO Image 

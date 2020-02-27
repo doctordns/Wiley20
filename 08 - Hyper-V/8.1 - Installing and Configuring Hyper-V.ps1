@@ -27,7 +27,7 @@ Start-VM -VMName HV1
 
 
 # 1. Install the Hyper-V feature on HV1
-Import-Module -Name Servermanager -WarningAction SilentlyContinue
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 
 # 2. Reboot HV1 to complete the installation
