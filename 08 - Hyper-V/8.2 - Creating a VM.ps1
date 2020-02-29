@@ -28,7 +28,7 @@ Get-WindowsImage -ImagePath $ISODrive\sources\install.wim |
   
 Dismount-DiskImage -ImagePath $ISOPath | Out-Null
 
-# 6.  Create a new VM:
+# 6.  Create a new VM
 New-VM -Name $VMname -Path $VMLocation -MemoryStartupBytes 1GB
 
 # 7. Create a virtual disk file for the VM
@@ -45,7 +45,7 @@ $IHT = @{
 }
 Set-VMDvdDrive @IHT
 
-# 10. Start the VM:
+# 10. Start the VM
 Start-VM -VMname $VMname 
 
 # 11 Complete a manual Installation

@@ -12,14 +12,14 @@ Get-VM -Name HVDirect -Computer HV1
 Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path
 
-# 4. Move the VM's to the C\PSDirectNew folder:
+# 4. Move the VM's to the C\HVD_New folder
 $MHT = @{
   Name                   = 'HVDirect'
   DestinationStoragePath = 'C:\HVD_NEW'
 }
 Move-VMStorage @MHT
 
-# 5. View the configuration details after moving the VM's storage:
+# 5. View the configuration details after moving the VM's storage
 (Get-VM -Name HVDirect).ConfigurationLocation
 Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path

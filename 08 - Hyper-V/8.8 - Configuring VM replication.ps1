@@ -100,7 +100,7 @@ Enable-VMReplication  @VMRHT
 Get-VMReplicationServer -ComputerName HV1
 Get-VMReplicationServer -ComputerName HV2
 
-# 6. Check HVDirect on HV1:
+# 6. Check HVDirect on HV1
 Get-VM -ComputerName HV1 -VMName HVDirect
 
 # 7. Start the initial replication from HV1 to HV2

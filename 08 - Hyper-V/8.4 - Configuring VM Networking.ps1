@@ -38,7 +38,7 @@ Connect-VMNetworkAdapter -VMName $VMNAME -SwitchName External
 Get-VMNetworkAdapter -VMName $VMName | 
   Set-VMNetworkAdapter -MacAddressSpoofing On
 
-# 7. Get VM networking information:
+# 7. Get VM networking information
 Get-VMNetworkAdapter -VMName $VMNAME
 
 # 8. With VM1 now in the network, observe the IP address in the VM

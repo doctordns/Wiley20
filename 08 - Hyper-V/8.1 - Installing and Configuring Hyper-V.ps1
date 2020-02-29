@@ -54,7 +54,7 @@ $VMCHT = @{
 }
 Set-VMHost @VMCHT
 
-# 5. Review key VMHost settings:
+# 5. Review key VMHost settings
 Get-VMHost  |
   Format-Table -Property 'Name', 'V*Path','Numasp*', 'Ena*','RES*'
   
