@@ -4,7 +4,7 @@
 
 # Relies on AD IT, and JerryG user create earlier
 
-# 1. Create Capabilities  Folder
+# 1. Create Capabilities Folder
 $JEACF = "C:\JEACapabilities"
 New-Item -Path $JEACF -ItemType Directory | Out-Null
 
@@ -15,7 +15,7 @@ $RCHT = @{
   Author          = 'Reskit Administration'
   CompanyName     = 'Reskit.Org' 
   Description     = 'Defines RKDnsAdmins role capabilities'
-  AliasDefinition = @{name='gh';value='Get-Help'}
+  AliasDefinition = @{Name='gh';Value='Get-Help'}
   ModulesToImport = 'Microsoft.PowerShell.Core','DnsServer'
   VisibleCmdlets  = ("Restart-Service",
                      @{ Name       = "Restart-Computer"; 

@@ -81,7 +81,7 @@ $URK   = 'Reskit\Administrator'
 $PRK   = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
 $CREDRK = New-Object System.Management.Automation.PSCredential $URK, $PRK
 
-# 13. Set WinRM for NOW
+# 13. Set WinRM
 $PATH = 'WSMan:\localhost\Client\TrustedHosts'
 Set-Item -Path $PATH -Value '*.Reskit.Org' -Force
 

@@ -143,5 +143,5 @@ $NCHT = @{
 New-ADComputer @NCHT
 
 # 17. See the computer accounts
-Get-ADComputer -Filter * -Properties DNSHOstName,LastLogonDate | 
+Get-ADComputer -Filter * -Properties DNSHostName,LastLogonDate | 
   Format-Table -Property Name, DNSHostName,LastLogonDate

@@ -20,7 +20,7 @@ $Users | Sort-Object -Property Alias | Format-Table
 
 # 3. Add the users using the CSV
 $Users | 
-  ForEach  -Parallel {
+  ForEach-Object -Parallel {
     $User = $_ 
     #  Create a hash table of properties to set on created user
     $Prop = @{}
