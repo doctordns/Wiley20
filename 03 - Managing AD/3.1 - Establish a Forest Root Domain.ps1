@@ -7,8 +7,7 @@
 # Scripts in Ch 1.
 
 # 1. Explicitly Load The Server Manager Module
-$EWA = @{WarningAction = 'SilentlyContinue'}
-Import-Module ServerManager @EWA
+Import-Module ServerManager -WarningAction SilentlyContinue
 
 # 2. Install the AD Domain Services feature and management tools
 $FEATUREHT = @{
@@ -19,7 +18,7 @@ $FEATUREHT = @{
 Install-WindowsFeature @FEATUREHT
 
 # 3. Import the AD DS Deployment Module
-Import-Module -Name ADDSDeployment @EWA
+Import-Module -Name ADDSDeployment -WarningAction SilentlyContinue
 
 # 4. Install Forest Root Domain and DC
 $ADINSTALLHT = @{

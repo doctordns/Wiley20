@@ -12,7 +12,7 @@ Enable-WSManCredSSP -Role Server -Force  |
 # 2. Import the ServerManager Module
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
 
-# 3. Check DC1 can be resolved, and can be reached from DC2
+# 3. Check DC1 can be resolved and can be reached from DC2
 Resolve-DnsName -Name DC1.Reskit.Org -Type A
 Test-NetConnection -ComputerName DC1.Reskit.Org -Port 445
 Test-NetConnection -ComputerName DC1.Reskit.Org -Port 389
