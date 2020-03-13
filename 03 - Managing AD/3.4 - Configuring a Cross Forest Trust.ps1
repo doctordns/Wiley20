@@ -2,32 +2,20 @@
 
 # Uses KapDC1 (a workgroup server with nothing else but powershell loaded)
 
-# 1. Set CredSSP on UKDC1
-Enable-WSManCredSSP -DelegateComputer *.Reskit.Org -Role Client -Force |
-  Out-Null
-Enable-WSManCredSSP -Role Server -Force  |
-  Out-Null
+# 1. Import the ServerManager module on KAPDC1
+Import-Module ServerManager -AWarningAction SilentlyContinue
 
-# 2. Import the ServerManager module on KAPDC1
-$EWA = @{WarningAction = 'SilentlyContinue'}
-Import-Module ServerManager @EWA
+# 2. Install the AD Domain Services feature and Management Tools
+$Features = 'AD-Domain-Services'
+Install-WindowsFeature -Name $Features -IncludeManagementTools 
 
-# 3. Install the AD Domain Services Feature and Management toolsT
-$FEATUREHT = @{
-  Name                   = 'AD-Domain-Services'
-  IncludeManagementTools = $True
-  WarningAction          = 'SilentlyContinue'
-}
-Install-WindowsFeature @FEATUREHT
-
-# 4. Test Network Connectivity with DC1
+# 3. Test Network Connectivity with DC1
 Test-NetConnection -ComputerName DC1
 
-# 5. Import the AD DS Deployment Module
+# 4. Import the AD DS Deployment Module
 Import-Module -Name ADDSDeployment @EWA
 
-
-# 6. Promote KAPDC1 to be DC in it's Own Forest
+# 5. Promote KAPDC1 to be DC in its own forest
 $ADINSTALLHT = @{
   String      = 'Pa$$w0rd'
   AsPlainText = $True
@@ -42,13 +30,8 @@ $ADINSTALLHT = @{
   ForestMode                    = 'WinThreshold' # Latest
   Force                         = $True
   WarningAction                 = 'SilentlyContinue'
-  NoRebootOnCompletion          = $True
 }
 Install-ADDSForest @ADINSTALLHT | Out-Null
-
-
-# 7. Restart to Complete Creation of Forest/Domain
-Restart-Computer -Force
 
 # 8. View Kapoho.Com Forest Details
 Get-ADForest
