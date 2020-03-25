@@ -5,11 +5,6 @@
 
 # 1. Install the DHCP Server feature on DC2
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
-$ModRoot = "$env:systemroot\system32\windowspowershell\v1.0\modules"
-$FDHT = @{
-  PrependPath = "$ModRoot\ServerManager\Feature.format.ps1xml"
-}
-Update-FormatData  @FDHT
 $FEATUREHT = @{
   Name                   = 'DHCP'
   IncludeManagementTools = $True
@@ -46,11 +41,11 @@ Invoke-Command -ComputerName DC1.reskit.org -ScriptBlock {
 }
 
 # 6. Get active leases in the scope (from both servers!)
-$DHCPServers = 'DC1.Reskit.Org', 'DC2.Reskit.ORg' 
+$DHCPServers = 'DC1.Reskit.Org', 'DC2.Reskit.Org' 
 $DHCPServers |   
   ForEach-Object { 
-    "Server $_" |Format-Table
-    Get-DhcpServerv4Scope -ComputerName $_ |Format-Table
+    "Server $_" | Format-Table
+    Get-DhcpServerv4Scope -ComputerName $_ | Format-Table
   }
 
 # 7. View DHCP Server Statistics from both DHCP Servers

@@ -1,4 +1,4 @@
-﻿# Recipe 3.5 - Reporting on AD Users
+﻿# 3.x - Reporting on AD Users
 
 # 1. Define a function Get-ReskitUser
 #    The function returns objects related to users in reskit.org

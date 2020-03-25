@@ -79,7 +79,7 @@ Get-ADUser -Filter * -Properties DisplayName |
 Get-ADUser -Identity 'CN=TBR1,OU=IT,DC=Reskit,DC=Org' |
     Remove-ADUser -Confirm:$false
 
-# 9. Remove Uuser Directly 
+# 9. Remove user directly 
 $RUHT = @{
   Identity = 'CN=TBR2,OU=IT,DC=Reskit,DC=Org'
   Confirm  = $false}
@@ -113,8 +113,8 @@ New-ADGroup @NGHT1
 # 12. Add a user to the DNS Admins group and view group members
 Add-ADGroupMember -Identity 'RKDnsAdmins' -Members 'JerryG' | Out-Null
 Get-ADGroupMember -Identity 'RKDnsAdmins'
-s
-# 13. Make A Group for the IT Team
+
+# 13. Make a group for the IT Team
 $NGHT2 = @{
   Name        = 'IT Team'
   Path        = 'OU=IT,DC=Reskit,DC=org'

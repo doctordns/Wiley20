@@ -4,19 +4,31 @@
 
 # 1. Create a new primary forward DNS zone for Cookham.Net
 Import-Module DNSServer
-$ZHT = @{
+$ZHT1 = @{
   Name              = 'Cookham.Net'
-  ZoneFile          = 'Cookham.Net.dns'
   ResponsiblePerson = 'dnsadmin.cookham.net.' 
+  ReplicationScope  = 'Forest'
   ComputerName      = 'DC1.Reskit.Org'
 }
-Add-DnsServerPrimaryZone @ZHT
+Add-DnsServerPrimaryZone @ZHT1
 
+# 2. Create a reverse lookup zone
+$ZHT2 = @{
+  NetworkID         = '10.10.10.0/24'
+  ResponsiblePerson = 'dnsadmin.reskit.org.' 
+  ReplicationScope  = 'Forest'
+  ComputerName      = 'DC1.Reskit.Org'
+}
+Add-DnsServerPrimaryZone @ZHT2
 
-# 2. Check The DNS Zones ON DC1
+# 3. Register DNS for DC1, DC2 
+Register-DnsClient
+Invoke-Command -ComputerName DC1 -ScriptBlock {Register-DnsClient}
+
+# 4. Check The DNS zones ON DC1
 Get-DNSServerZone -ComputerName DC1
 
-# 3. Add Resource Record to Kapoho.Com and get results:
+# 5. Add Resource Record to Cookham.Net zone
 # Add an A record
 $RRHT1 = @{
   ZoneName      =  'Cookham.Net'
@@ -45,14 +57,17 @@ $MXHT = @{
 }
 Add-DnsServerResourceRecordMX @MXHT
 
-# 4. Check results of RRs in Cookham.Net zone
-$Zname = 'Cookham.Net'
-Get-DnsServerResourceRecord -ZoneName $Zname
+# 6. Restart DNS Service to ensure replication
+Restart-Service -Name DNS
+$SB = {Restart-Service -Name dns}
+Invoke-Command -ComputerName DC1 -ScriptBlock $SB
 
+# 7. Check results of RRs in Cookham.Net zone
+Get-DnsServerResourceRecord -ZoneName 'Cookham.Net'
 
-# 5. Test DNS Resolution on DC1
+# 8. Test DNS Resolution on DC2, DC1
 # Test The Cname
-Resolve-DnsName -Server DC1.Reskit.Org -Name Mail.Cookham.Net
-# Test The MX
-Resolve-DnsName -Server DC1.Reskit.Org -Name 'Cookham.Net'  -Type MX 
+Resolve-DnsName -Server DC1.Reskit.Org -Name 'Mail.Cookham.Net'
+# Test The MX on DC2
+Resolve-DnsName -Server DC2.Reskit.Org -Name 'Cookham.Net'  -Type MX 
 

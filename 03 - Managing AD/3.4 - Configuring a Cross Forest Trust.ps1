@@ -33,10 +33,10 @@ $ADINSTALLHT = @{
 }
 Install-ADDSForest @ADINSTALLHT | Out-Null
 
-# 8. View Kapoho.Com Forest Details
+# 6. View Kapoho.Com forest details
 Get-ADForest
 
-# 9. Adjust DNS on KAPDC1 to resolve Reskit.Org from DC1
+# 7. Adjust DNS on KAPDC1 to resolve Reskit.Org from DC1
 $CFHT = @{
    Name          = 'Reskit.Org'
    MasterServers = '10.10.10.10' 
@@ -44,10 +44,10 @@ $CFHT = @{
 }
 Add-DnsServerConditionalForwarderZone @CFHT
 
-# 10. Test Conditional Forwarding
+# 8. Test Conditional Forwarding
 Resolve-DNSName -Name DC1.Reskit.Org -Type A
 
-# 11. Create a Script Block to Add Conditional Forwarder on DC1
+# 9. Create a Script Block to Add Conditional Forwarder on DC1
 $SB = {
   # Add CF zone
   $CFHT = @{
@@ -59,16 +59,16 @@ $SB = {
   Resolve-DNSName -Name KAPDC1.Kapoho.Com | Format-Table
 }  
 
-# 12. Create Credentials to Run A Command on DC1
+# 10. Create Credentials to Run A Command on DC1
 $URK   = 'Reskit\Administrator'
 $PRK   = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
 $CREDRK = New-Object System.Management.Automation.PSCredential $URK, $PRK
 
-# 13. Set WinRM
+# 11. Set WinRM
 $PATH = 'WSMan:\localhost\Client\TrustedHosts'
 Set-Item -Path $PATH -Value '*.Reskit.Org' -Force
 
-# 14. Run the Script Block On DC1
+# 12. Run the Script Block On DC1
 $NZHT = @{
   Computername = 'DC1.Reskit.Org'
   Script       = $SB
@@ -76,7 +76,7 @@ $NZHT = @{
 }
 Invoke-Command @NZHT 
 
-# 15. Get Reskit.Org and Kapoho.Com details
+# 13. Get Reskit.Org and Kapoho.Com details
 $Reskit       = 'Reskit.Org'
 $User         = 'Administrator'
 $UserPW       = 'Pa$$w0rd'
@@ -92,16 +92,16 @@ $ReskitForest =
 $KapohoForest = 
   [System.DirectoryServices.ActiveDirectory.Forest]::GetCurrentForest()
 
-# 16. View Reskit Forest Details 
+# 14. View Reskit Forest Details 
 $ReskitForest
 
-# 17. Viewing Kapoho Forest Details
+# 15. Viewing Kapoho Forest Details
 $KapohoForest
 
-# 18. Establish a Cross Forest Trust
+# 16. Establish a Cross Forest Trust
 $KapohoForest.CreateTrustRelationship($ReskitForest,"Bidirectional")
 
-# 19. Create SB to Adjust ACL on DC1
+# 17. Create SB to Adjust ACL on DC1
 $SB2 = {
   # Ensure NTFSSecurity module is loaded on DC1
   Install-Module -Name NTFSSecurity -Force -ErrorAction SilentlyContinue
@@ -120,7 +120,7 @@ $SB2 = {
   Get-NTFSaccess -Path C:\Foo\XFTTEST.Txt | Format-Table
 }
 
-# 20. Run the Script Block on DC1 To Demonstrate X-Forest Trust
+# 18. Run the Script Block on DC1 To Demonstrate X-Forest Trust
 $PHT = @{
   ComputerName = 'DC1.Reskit.Org'
   Credential   = $CREDRK

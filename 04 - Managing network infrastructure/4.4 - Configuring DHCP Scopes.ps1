@@ -2,7 +2,7 @@
 
 # Run on DC1, after DHCP Server service added
 
-# 1. Create a IPV4 Scope
+# 1. Create a IPv4 Scope
 Import-Module DHCPServer -WarningAction SilentlyContinue
 $SCOPEHT = @{
   Name         = 'ReskitOrg'
@@ -39,7 +39,7 @@ $NICHT = @{
   AddressFamily  = 'IPv4'
 }
 $NIC = Get-NetIPInterface @NICHT
-Set-NetIPInterface -InterfaceAlias $nic.ifAlias -DHCP Enabled
+Set-NetIPInterface -InterfaceAlias $NIC.ifAlias -DHCP Enabled
 Get-NetIPConfiguration
 Resolve-DnsName -Name SRV2.Reskit.Org -Type A
 

@@ -15,13 +15,14 @@ $NIHT = @{
 }
 New-Item @NIHT | Out-Null
 
-# 3. Downloadoing printer drivers for Xerox printers
+# 3. Downloading printer drivers for Xerox printers
 $URL    = 'http://bit.ly/XDrivers'
 $Target = 'C:\Xerox\XDrivers.zip'
 Start-BitsTransfer -Source $URL -Destination $Target
 
 # 4. Expand the zip file
-$Drivers = 'C:\Foo\Xerox\Drivers'
+$Drivers = 'C:\Xerox\Drivers'
+New-Item -Path $Drivers -ItemType Directory | Out-Null
 Expand-Archive -Path $Target -DestinationPath $Drivers
 
 # 5. Installing the drivers

@@ -3,16 +3,12 @@
 # Run this on DC2
 
 # 1. Install the DNS Feature
-$SML = "$ENV:Windir\system32\WindowsPowerShell\v1.0\modules\" +
-      'ServerManager\Feature.format.ps1xml'
-Update-FormatData -PrependPath $SML
-$WAHT = @{WarningAction='SilentlyContinue'}
-Import-Module -Name ServerManager @WAHT
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature -Name DNS -IncludeManagementTools  
 
 # 2. Set Key DNS Server Options:
 # Disable recursion on this server
-Set-DnsServerRecursion -Enable $false
+Set-DnsServerRecursion -Enable $true
 # Configure DNS Server cache maximum size
 Set-DnsServerCache  -MaxKBSize 20480  # 28 MB
 # Enable EDNS
@@ -37,8 +33,3 @@ $DNSRV |
 # View ENDS Settings
 $DNSRV |
   Select-Object -ExpandProperty ServerEdns
-
-
-
-
-

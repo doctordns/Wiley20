@@ -16,7 +16,7 @@ $CSVDATA | Out-File -FilePath C:\Foo\Users.Csv
 #    want to add to AD:
 $Users = Import-CSV -Path C:\Foo\Users.Csv | 
   Sort-Object  -Property Alias
-$Users | Sort-Object -Property Alias | Format-Table
+$Users | Format-Table
 
 # 3. Add the users using the CSV
 $Users | 
