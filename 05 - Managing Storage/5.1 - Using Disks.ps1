@@ -7,7 +7,7 @@
 # 0. Add 2 VHDs to SRV1 VM
 #    Run this on the Hyper-V VM Host
 
-# Stop the vm
+# Stop the VM
 Stop-VM -VMName SRV1
 
 # Get File location for the disk in this VM
@@ -22,7 +22,7 @@ $D2 = New-VHD -Path $NewPath2 -SizeBytes 128GB -Dynamic
 
 # Add a new SCSI Controller to SRV1
 $C = (Get-VMScsiController -VMName SRV1)
-Add-VMScsiController -VMname SRV1
+Add-VMScsiController -VMName SRV1
 
 # Add first disk to VM
 $HDHT = @{ 
@@ -37,10 +37,12 @@ Add-VMHardDiskDrive @HDHT
 $HDHT.Path = $NewPath2
 $HDHT.ControllerLocation = 1
 Add-VMHardDiskDrive @HDHT
+
 # Start the VM
 Start-VM -VMName SRV1
 
 ### start of main script
+### run in SRV1 after it reboots
 
 # 1. Get physical disks on this system:
 Get-Disk |
@@ -91,7 +93,7 @@ $NVHT2 = @{
 Format-Volume @NVHT2
 
 # 9. Get partitions on SRV1
-Get-Partition | Format-Table -AutoSize
+Get-Partition |
   Sort-Object -Property DriveLetter |
     Format-Table -Property DriveLetter, Size, Type
 

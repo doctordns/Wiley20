@@ -11,7 +11,7 @@ Get-FsrmFileGroup |
 Get-FsrmFileScreenTemplate |
   Format-Table -Property Name, IncludeGroup, Active
 
- # 3. Create a new folder
+# 3. Create a new folder
 $Path = 'C:\FileScreen'
 If (-Not (Test-Path $Path)) {
   New-Item -Path $Path -ItemType Directory  |
@@ -63,7 +63,7 @@ $FSRMSHT = @{
   EventNotificationLimit   = 1
   ReportNotificationLimit  = 1
 }
-Set-FsrmSetting @FSRMSH
+Set-FsrmSetting @FSRMSHt
 
 
 # 9. Re-test the file screen to check the the action

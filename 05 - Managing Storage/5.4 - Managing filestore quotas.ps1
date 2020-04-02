@@ -4,7 +4,7 @@
 
 
 # 1. Install FS Resource Manager feature on SRV1
-Import-module -Name ServerMANAGER -WarningAction 'SllentlyContinue'
+Import-module -Name ServerMANAGER -WarningAction 'SilentlyContinue'
 $IHT = @{
   Name                   = 'FS-Resource-Manager' 
   IncludeManagementTools = $True
@@ -47,9 +47,10 @@ If (-Not (Test-Path C:\Quota)) {
 
 # 7.  Build an FSRM Action
 $Body = @'
-User [Source Io Owner] has exceeded the [Quota Threshold]% quota threshold for 
-the quota on [Quota Path] on server [Server].  The quota limit is [Quota Limit MB] MB, 
-and [Quota Used MB] MB currently is in use ([Quota Used Percent]% of limit).
+User [Source Io Owner] has exceeded the [Quota Threshold]% quota 
+threshold for the quota on [Quota Path] on server [Server].  
+The quota limit is [Quota Limit MB] MB, and [Quota Used MB] MB 
+currently is in use ([Quota Used Percent]% of limit).
 '@
 $NAHT = @{
   Type      = 'Email'
@@ -62,7 +63,7 @@ $Action1 = New-FsrmAction @NAHT
 # 8. Create an FSRM threshold 
 $Thresh = New-FsrmQuotaThreshold -Percentage 85 -Action $Action1
 
-# 9.  Build a quota for the folder
+# 9. Build a quota for the folder
 $NQHT1 = @{
   Path      = 'C:\Quota'
   Template  = '10 MB Reskit Quota'
@@ -70,7 +71,8 @@ $NQHT1 = @{
 }
 New-FsrmQuota @NQHT1
 
-# 10. Test the 85% SOFT quota limit on C:\QuotaSGet-ChildItem -Path C:\Quota -Recurse | 
+# 10. Test the 85% SOFT quota limit on C:\Quota
+Get-ChildItem -Path C:\Quota -Recurse | 
   Remove-Item -Force     # for testing purposes!
 $S = '+'.PadRight(8MB)
 # Make a first file - under the soft quota

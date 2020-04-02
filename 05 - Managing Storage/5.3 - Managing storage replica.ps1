@@ -79,7 +79,7 @@ $SB = {
 Invoke-Command -ComputerName SRV2 -ScriptBlock $SB
 
 # 4. Add storage replica feature to SRV1
-Import-Module ServerManager
+Import-Module ServerManager 
 Install-WindowsFeature -Name Storage-Replica -IncludeManagementTools
 
 # 5. Restart SRV1 to finish the installation process
@@ -101,7 +101,7 @@ $RSHT = @{
 Restart-Computer @RSHT -Wait -For PowerShell
 
 # 8. Test Replica on SRV2 from SRV1
-Import-Module -Name StorageReplica
+Import-Module -Name StorageReplica -WarningAction SilentlyContinue
 $TSTHT = @{
   SourceComputerName       = 'SRV1.Reskit.Org'
   SourceVolumeName         = 'F:'
