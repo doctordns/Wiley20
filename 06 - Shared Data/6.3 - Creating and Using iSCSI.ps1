@@ -6,28 +6,28 @@
 # 0. Add additional disk to hold iSCSI VHD to SRV2 VM
 #    Run this on the Hyper-V VM Host in an elevated console
 # Stop the SRV2 VM
-Stop-VM -VMName SRV2
+Stop-VM -VMName SRV2x -Force
 # Get File location for the disk in this VM
-$VM = Get-VM -VMName SRV2
+$VM = Get-VM -VMName SRV2x
 $Par = Split-Path -Path $VM.HardDrives[0].Path
 # Create a new VHD for S drive
 $NewPath3 = Join-Path -Path $Par -ChildPath SDrive.VHDX
 $D4 = New-VHD -Path $NewPath3 -SizeBytes 128GB -Dynamic
 # Work out next free slot on Controller 0
-$Free = (Get-VMScsiController -VMName SRV2 |
+$Free = (Get-VMScsiController -VMName SRV2x |
           Select-Object -First 1 | 
             Select-Object -ExpandProperty Drives).count
 # Add new disk to VM
 $HDHT = @{ 
   Path               = $NewPath3
-  VMName             = 'SRV2'
+  VMName             = 'SRV2x'
   ControllerType     = 'SCSI'
   ControllerNumber   = 0
   ControllerLocation = $Free
 }
 Add-VMHardDiskDrive @HDHT
 # Start the VM
-Start-VM -VMName SRV2
+Start-VM -VMName SRV2x
 
 # Once SRV2 is up and running, 
 # log into SRV2 as Administrator and create a new S: volume on the new disk
@@ -58,7 +58,7 @@ New-Volume @NVHT1
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature FS-iSCSITarget-Server -IncludeManagementTools
 
-# 2. Exploring iSCSI target server settings:
+# 2. Exploring default iSCSI target server settings:
 Import-Module -Name  IscsiTarget -WarningAction SilentlyContinue
 Get-IscsiTargetServerSetting
 

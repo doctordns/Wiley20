@@ -21,9 +21,9 @@ New-Volume @NVHT1
 
 
 
-# 1. Esure folder exists and install NTFS Security module
+# 1. Ensure folder exists and install NTFS Security module
 $EAHT = @{Erroraction = 'SilentlyContinue' }
-New-Item -Path C:\Sales1 -ItemType Directory @EAHT
+New-Item -Path C:\Sales1 -ItemType Directory | Out-Null
 Install-Module -Name NTFSSecurity -Force
 
 # 2. Discover existing SMB shares on FS1
@@ -43,7 +43,7 @@ Set-SMBShare -Name Sales1 -FolderEnumerationMode AccessBased @CHT
 # 6. Require encryption on data transmistted to/from the share
 Set-SmbShare –Name Sales1 -EncryptData $true @CHT
 
-# 7. Removing all access to Sales1 hare
+# 7. Removing all access to Sales1 share for the Everyone group
 $AHT1 = @{
   Name        = 'Sales1'
   AccountName = 'Everyone'
@@ -51,7 +51,7 @@ $AHT1 = @{
 }
 Revoke-SmbShareAccess @AHT1 | Out-Null
 
-# 8. Adding Reskit\DomainAdmins to the share
+# 8. Adding Reskit\Domain Admins to the share
 $AHT2 = @{
   Name        = 'Sales1'
   AccessRight = 'Read'
@@ -69,7 +69,17 @@ $AHT3 = @{
 }
 Grant-SmbShareAccess  @AHT3 | Out-Null
 
-# 10. Grant Sales Team read access, SalesAdmins has Full access
+# 10. Set Creator/Owner to Full Access
+$AHT4 = @{
+  Name         = 'Sales1'
+  AccessRight  = 'Full'
+  AccountName  = 'CREATOR OWNER'
+  Confirm      = $False 
+}
+Grant-SmbShareAccess @AHT4  | Out-Null
+
+
+# 11. Grant Sales group change access
 $AHT5 = @{
   Name        = 'Sales1'
   AccessRight = 'Change'
@@ -78,21 +88,21 @@ $AHT5 = @{
 }
 Grant-SmbShareAccess @AHT5 | Out-Null
 
-# 11. Review Access to Sales1 share
+# 12. Review Access to Sales1 share
 Get-SmbShareAccess -Name Sales1 | 
   Sort-Object AccessRight
 
-# 12. Review initial NTFS Permissions on the folder
+# 13. Review initial NTFS Permissions on the folder
 Get-NTFSAccess -Path C:\Sales1 
 
-# 13. Set the NTFS Permissions to match share
+# 14. Set the NTFS Permissions to match share
 Set-SmbPathAcl -ShareName 'Sales1'
 
-# 14. Removing NTFS Inheritance
-Set-NTFSInheritance -Path C:\Sales1 -AccessInheritanceEnabled:$False
+# 15. Removing NTFS Inheritance
+Set-NTFSInheritance -Path C:\Sales1 -AccessInheritanceEnabled $False
 
-# 15. View folder ACL using Get-NTFSAccess
-Get-NTFSAccess -Path C:\Sales1
+# 16. View folder ACL using Get-NTFSAccess
+Get-NTFSAccess -Path C:\Sales1 |
   Format-Table -AutoSize
 
 

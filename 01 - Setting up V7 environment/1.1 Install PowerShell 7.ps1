@@ -25,5 +25,5 @@ Invoke-RestMethod -Uri $URI |
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
 
 # 4. Install PowerShell 7
-C:\Foo\Install-PowerShell.ps1 -UseMSI -Quiet |
+C:\Foo\Install-PowerShell.ps1 -UseMSI -Quiet -AddExplorerContextMenu -EnablePSRemoting |
   Out-Null

@@ -51,13 +51,13 @@ Invoke-WebRequest -Uri $CascadiaPath -OutFile $CascadiaFile
 # Install Cascadia Code font
 $FontShellApp = New-Object -Com Shell.Application
 $FontShellNamespace = $FontShellApp.Namespace(0x14)
-$FontShellNamespace.CopyHere($cascadiaFile, 0x10)
+$FontShellNamespace.CopyHere($CascadiaFile, 0x10)
 
 # 7. Update Local User Settings for VS Code
 #    This step in particular needs to be run in PowerShell 7!
 $JSON = @'
 {
-  "workbench.colorTheme": "Quiet Light",
+  "workbench.colorTheme": "PowerShell ISE",
   "powershell.codeFormatting.useCorrectCasing": true,
   "files.autoSave": "onWindowChange",
   "files.defaultLanguage": "powershell",
@@ -67,7 +67,7 @@ $JSON = @'
 }
 '@
 $JHT = ConvertFrom-Json -InputObject $JSON -AsHashtable
-$PWSH = "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe"
+$PWSH = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
 $JHT += @{
   "terminal.integrated.shell.windows" = "$PWSH"
 }

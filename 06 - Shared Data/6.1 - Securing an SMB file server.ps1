@@ -45,7 +45,7 @@ $SHT3 = @{
 Set-SmbServerConfiguration @SHT3
 
 # 7. Restart the service with the new configuration
-Restart-Service lanmanserver
+Restart-Service LanmanServer
 
 # 8. Review SMB Server Configuration 
 Get-SmbServerConfiguration
