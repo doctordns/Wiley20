@@ -53,7 +53,7 @@ $PSCHT= @{
 New-PSSessionConfigurationFile @PSCHT
 
 # 5. Test the session configuration file
-Test-PSSessionConfigurationFile -Path cd$P 
+Test-PSSessionConfigurationFile -Path $P 
 
 # 6. Enable Remoting and register the JEA Session Definition
 Enable-PSRemoting -Force | Out-Null
@@ -86,7 +86,7 @@ $ICMHT = @{
 # 10. Get commands available within the JEA session
 Invoke-Command -ScriptBlock $SB1 @ICMHT |
   Sort-Object -Property Module |
-    Select-Object -First 
+    Select-Object -First 15
 
 # 11. Invoke a JEA defined function in a JEA Ssession As JerryG
 Invoke-Command -ScriptBlock $SB2 @ICMHT
