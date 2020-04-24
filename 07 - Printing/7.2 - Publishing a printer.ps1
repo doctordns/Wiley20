@@ -4,6 +4,7 @@
 # Uses Printer added in 7.1
 
 # 1. Get the printer object
+Import-Module -Name PrintManagement -WarningAction SilentlyContinue
 $Printer = Get-Printer -Name SalesPrinter1
 
 # 2. Checking the initial publication status

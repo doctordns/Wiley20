@@ -12,5 +12,5 @@ rundll32.exe printui.dll,PrintUIEntry /Xs /n $P Portname $PP1,$PP2
 
 # 3. View resultant details:
 Get-Printer $P | 
-   Format-Table -Property Name, Type, DriverName, PortName,
-                          Shared, Published
+   Format-Table -Property Name, Type, DriverName, 
+                          PortName, Shared, Published

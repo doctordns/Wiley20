@@ -33,40 +33,37 @@ $NIHT = @{
 New-Item @NIHT | Out-Null 
 
 # 6. Changing the spool folder path
-$Newpath = 'C:\SpoolPath'
-$PS.DefaultSpoolDirectory = $Newpath
+$PS.DefaultSpoolDirectory = $SP
 
 # 7. Committing the change:
-$Ps.Commit()
+$PS.Commit()
 
 # 8. Restart the Spooler to use the new folder
 Restart-Service -Name Spooler
 
 # 9. Reviewing the spooler folder
 New-Object -TypeName System.Printing.PrintServer |
-    Format-Table -Property Name,
-                  DefaultSpoolDirectory
+    Format-Table -Property Name, DefaultSpoolDirectory
 
 
 
 #  Another way to set the Spooler directory is by directly editing the registry as follows:
 
 
-# 10. Stopping the Spooler service
-Stop-Service -Name Spooler
-
-# 11. Create a new/different spool folder
-$SPL = 'C:\SpoolViaRegistry'
+# 10. Create a new/different spool folder
+$SPL = 'C:\SpoolViaRegistry'  # different spool folder
 $NIHT2 = @{
-  Path        = $SPL
+  Path        = $SPL 
   Itemtype    = 'Directory'
   ErrorAction = 'SilentlyContinue'
 }
 New-Item  @NIHT2 | Out-Null
 
-# 12. Create the spooler folder and configure in the registry
+# 11. Stopping the Spooler service
+Stop-Service -Name Spooler
+
+# 12. Configure the new spooler folder
 $RPath    = 'HKLM:\SYSTEM\CurrentControlSet\Control\Print\Printers'
-$Spooldir = 'C:\SpoolViaRegistry'   # Folder should exist
 $IP = @{
   Path    = $RPath
   Name    = 'DefaultSpoolDirectory'
