@@ -2,32 +2,33 @@
 # Uses FS1. FS2, and SRV2
 # Starts on VMhost, then SRV2, and finished on FS1
 
+# Run on VM Host to add new drive to SRV2 VM
 
 # 0. Add additional disk to hold iSCSI VHD to SRV2 VM
 #    Run this on the Hyper-V VM Host in an elevated console
 # Stop the SRV2 VM
-Stop-VM -VMName SRV2x -Force
+Stop-VM -VMName SRV2 -Force
 # Get File location for the disk in this VM
-$VM = Get-VM -VMName SRV2x
+$VM = Get-VM -VMName SRV2
 $Par = Split-Path -Path $VM.HardDrives[0].Path
 # Create a new VHD for S drive
 $NewPath3 = Join-Path -Path $Par -ChildPath SDrive.VHDX
 $D4 = New-VHD -Path $NewPath3 -SizeBytes 128GB -Dynamic
 # Work out next free slot on Controller 0
-$Free = (Get-VMScsiController -VMName SRV2x |
+$Free = (Get-VMScsiController -VMName SRV2 |
           Select-Object -First 1 | 
             Select-Object -ExpandProperty Drives).count
 # Add new disk to VM
 $HDHT = @{ 
   Path               = $NewPath3
-  VMName             = 'SRV2x'
+  VMName             = 'SRV2'
   ControllerType     = 'SCSI'
   ControllerNumber   = 0
   ControllerLocation = $Free
 }
 Add-VMHardDiskDrive @HDHT
 # Start the VM
-Start-VM -VMName SRV2x
+Start-VM -VMName SRV2
 
 # Once SRV2 is up and running, 
 # log into SRV2 as Administrator and create a new S: volume on the new disk
@@ -56,7 +57,11 @@ New-Volume @NVHT1
 
 # 1. Installing the iSCSI target feature on SRV2
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
-Install-WindowsFeature FS-iSCSITarget-Server -IncludeManagementTools
+$WFHT = @{
+  Name                   = 'FS-iSCSITarget-Server'
+  IncludeManagementTools = $true
+}
+Install-WindowsFeature @WFHT
 
 # 2. Exploring default iSCSI target server settings:
 Import-Module -Name  IscsiTarget -WarningAction SilentlyContinue
@@ -118,7 +123,7 @@ $CHT = @{
 }
 Connect-IscsiTarget  @CHT
                     
-# 11. Viewing iSCSI disk from FST on SRV2
+# 11. Viewing iSCSI disk from FS1 on SRV2
 $ISD =  Get-Disk | 
   Where-Object BusType -eq 'iscsi'
 $ISD | 

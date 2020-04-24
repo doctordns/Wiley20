@@ -1,102 +1,119 @@
 ﻿#  6.3 - Create SOFS
-# This recipe is run on FS1, but involves FS2 and SRV2
-# ISCSI initiator is setup on FS1 
-# ISCSI target setup on SRV2
+# This recipe is run on FS2, but involves FS1 and SRV2
+# ISCSI initiator is already setup on FS1 
+# ISCSI target is already setup on SRV2
+
+#  RUN ON FS2
 
 # 1. Setup FS2 to support ISCSI
 # Adjust the iSCSI service to auto start, then start the service and reboot.
-$SB1 = {
-  Set-Service MSiSCSI -StartupType 'Automatic'
-  Start-Service MSiSCSI
-}
-Invoke-Command -ComputerName FS2 -ScriptBlock $SB1 | Out-Null
+Set-Service MSiSCSI -StartupType 'Automatic'
+Start-Service MSiSCSI
 
- # 2. Setup iSCSI portal to SRV2
- $SB2 = {
-   $PHT = @{
-     TargetPortalAddress     = 'SRV2.Reskit.Org'
-     TargetPortalPortNumber  = 3260
-    }
-    New-IscsiTargetPortal @PHT
-    #  Get the SalesTarget on portal
-    $Target  = Get-IscsiTarget 
-    # Connect to the target on SRV2
-    $CHT = @{
-      TargetPortalAddress = 'SRV2.Reskit.Org'
-      NodeAddress         = $Target.NodeAddress
-    }
-    Connect-IscsiTarget  @CHT
-    $ISD =  Get-Disk | 
-      Where-Object BusType -eq 'iscsi'
-      $ISD | 
-        Set-Disk -IsOffline  $False
-      $ISD | 
-        Set-Disk -Isreadonly $False
+# 2. Setup iSCSI portal to SRV2
+$PHT = @{
+  TargetPortalAddress     = 'SRV2.Reskit.Org'
+  TargetPortalPortNumber  = 3260
 }
-Invoke-Command -ComputerName FS2 -ScriptBlock $SB2 | Out-Null
+New-IscsiTargetPortal @PHT
+#  Get the SalesTarget on portal
+$Target  = Get-IscsiTarget 
+# Connect to the target on SRV2
+$CHT = @{
+  TargetPortalAddress = 'SRV2.Reskit.Org'
+  NodeAddress         = $Target.NodeAddress
+}
+Connect-IscsiTarget  @CHT
+$ISD =  Get-Disk | 
+          Where-Object BusType -eq 'iscsi'
+$ISD | 
+  Set-Disk -IsOffline  $False
+$ISD | 
+  Set-Disk -Isreadonly $False
 
-# 3. Adding clustering features to FS1/FS1
-Import-Module ServerManager -WarningAction SilentlyContinue
+# 3. Add File Server features to FS1
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
+$Features = 'FileAndStorage-Services',
+            'File-Services',
+            'FS-FileServer'
+Install-WindowsFeature -Name $Features -IncludeManagementTools |
+  Out-Null
+
+# 4. Adding clustering features to FS1/FS1
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
 $IHT = @{
-  Name                    = 'Failover-Clustering'
+  Name                   = 'Failover-Clustering'
   IncludeManagementTools = $true
 }
 Install-WindowsFeature -ComputerName FS2 @IHT
 Install-WindowsFeature -ComputerName FS1 @IHT
 
-# 4. Restarting both FS1, FS2
-Restart-Computer -ComputerName FS2 -Force
+# 5. Restarting both FS1, FS2
 Restart-Computer -ComputerName FS1 -Force
+Restart-Computer -ComputerName FS2 -Force
 
-# 5. Testing Cluster Nodes
-Import-Module -Name FailoverClusters
+# 6. Testing Cluster nodes
+Import-Module -Name FailoverClusters -WarningAction SilentlyContinue
 $CHECKOUTPUT = 'C:\Foo\Clustercheck'
 Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT | Out-Null
 
-# 6. View Validation test results
+# 7. View the cluster Validation test results
 $COFILE = "$CheckOutput.htm"
 Invoke-Item  -Path $COFILE
 
-# 7.  Creating The Cluster
+# 8.  Creating the cluster
 $NCHT = @{
   Name          = 'FS'
   Node          = 'FS1.Reskit.Org', 'FS2.Reskit.Org'
   StaticAddress = '10.10.10.100'
+  NoStorage     = $true
 }
 New-Cluster @NCHT | Out-Null
 
-# 8. Ensuring iSCSI disks are connected
+# 9. Configure a share on DC1 to act as quorum
+$SBDC1 = {
+  New-Item -Path c:\Quorum -ItemType Directory
+  New-SMBShare -Name Quorum -Path C:\Quorum -FullAccess Everyone
+}
+Invoke-Command -ComputerName DC1 -ScriptBlock $SBDC1 | Out-Null
+
+# 10. Set the cluster Witness
+Set-ClusterQuorum -NodeAndFileShareMajority \\DC1\quorum
+
+# 11. Ensuring iSCSI disks are connected
 $SB = {
   Get-ISCSITarget | 
-  Connect-IscsiTarget -ErrorAction SilentlyContinue
+    Connect-IscsiTarget -ErrorAction SilentlyContinue
 }
 Invoke-Command  -ComputerName FS1 -ScriptBlock $SB
 Invoke-Command  -ComputerName FS2 -ScriptBlock $SB
 
-# 9. Viewing the iSCSI Target
-Get-ClusterAvailableDisk 
-
-# 10. Adding iSCSI disk to the cluster
+# 12. Adding the iSCSI disk to the cluster
 Get-Disk | 
-  Where-Object BusType -eq 'iSCSI'| 
+  Where-Object BusType -eq 'iSCSI' | 
     Add-ClusterDisk
 
-# 11. Move disk into CSV
+# 13. Move disk into the CSV
 Add-ClusterSharedVolume -Name 'Cluster Disk 1'
 
-# 12. Add SOFS role to Cluster
+# 14. Add SOFS role to Cluster
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Add-WindowsFeature File-Services -IncludeManagementTools | Out-Null
-Add-ClusterScaleOutFileServerRole -Cluster RKFS
+Add-ClusterScaleOutFileServerRole -Cluster FS | Out-Null
 
-
-# 13. Create a folder and give Sales Access to the folder
+# 15. Create a folder and give Sales Access to the folder
+Install-Module -Name NTFSSecurity -Force | Out-Null
 $HvFolder = 'C:\ClusterStorage\Volume1\HVData'
 New-Item -Path $HvFolder -ItemType Directory |
               Out-Null
-Add-NTFSAccess -Path $HvFolder -Account Reskit\Sales -AccessRights FullControl
+$ACCHT = @{
+  Path        = $HvFolder
+  Account     = 'Reskit\Sales'
+  AccessRights = 'FullControl'
+}              
+Add-NTFSAccess  @ACCHT 
 
-# 14. Adding a Continuously Available share to the entire cluster
+# 16. Adding a Continuously Available share to the entire cluster
 $SMBSHT2 = @{
   Name                  = 'SalesHV'
   Path                  = $HvFolder
@@ -106,27 +123,8 @@ $SMBSHT2 = @{
 }              
 New-SMBShare  @SMBSHT2 
 
-# 15. View Shares on FS1 and FS2
-Get-SmbShare
+# 17. View Shares on FS1 and FS2
+Get-SmbShare    # FOR FS1
 Invoke-Command -ComputerName FS2 -ScriptBlock {Get-SmbShare}
 
 
-
-
-
-
-<#  Remove it
-Get-SMBShare -name SalesData | Remove-SMBShare -Confirm:$False
-Get-SMBShare -name HVShare | Remove-SMBShare -Confirm:$False
-
-get-clusterresource | Stop-ClusterResource
-
-Get-ClusterSharedVolume | Remove-ClusterSharedVolume
-Get-Clusterresource | stop-clusterresource
-Get-ClusterGroup -Name salesfs | remove-clusterresource
-Get-ClusterResource | remove-clusterresource -Force
-Remove-Cluster  -force -cleanupad
-#>
-
-# later
-Add-ClusterSharedVolume -Name HVCSV

@@ -3,24 +3,6 @@
 # Run from FS1
 
 
-# 0 Format a new disk:
-# Find the new disk
-$NewDisk = Get-Disk | 
-             Where-Object PartitionStyle -eq Raw 
-$NewDisk | 
-    Initialize-Disk -PartitionStyle GPT  
-    
-# Create a S: volume in newly added disk
-$NVHT1 = @{
-  DiskNumber   = $NewDisk.Number
-  FriendlyName = 'iSCSI' 
-  FileSystem   = 'NTFS' 
-  DriveLetter  = 'S'
-}
-New-Volume @NVHT1
-
-
-
 # 1. Ensure folder exists and install NTFS Security module
 $EAHT = @{Erroraction = 'SilentlyContinue' }
 New-Item -Path C:\Sales1 -ItemType Directory | Out-Null
