@@ -31,13 +31,13 @@ $HDHT = @{
   ControllerLocation = 0 
 }
 Add-VMHardDiskDrive @HDHT   # Add 1st disk to vm
-# Add Secon to VM
+# Add Seconf disk to VM
 $HDHT.Path               = $NewPath2
 $HDHT.ControllerLocation = 1
 Add-VMHardDiskDrive @HDHT   # Add 2nd disk to VM
 Start-VM -VMName SRV2 
 
-# After restart, run this on SRV2 as administrator
+# After restart, run this on SRV2 as reskit\administrator
 
 Get-Disk | 
   Where-Object PartitionStyle -eq Raw |
