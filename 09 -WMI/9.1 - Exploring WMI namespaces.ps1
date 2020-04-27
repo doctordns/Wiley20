@@ -4,22 +4,20 @@
 
 
 # 1. View CIM classes in the root namespace
-Get-CimClass -Namespace "root" | Select-Object -First 20
+Get-CimClass -Namespace 'root' | Select-Object -First 20
 
 # 2. Look in __NAMESPACE in Root
-Get-CimInstance -Namespace "root" -ClassName __NAMESPACE |
+Get-CimInstance -Namespace 'root' -ClassName __NAMESPACE |
   Sort-Object -Property Name
 
 # 3. Get and count classes in root\CimV2
 $Classes = Get-CimClass -Namespace 'root\CimV2'  
 "There are $($Classes.Count) classes in root\CimV2"
 
-# 4. Discovering ALL namespaces in WMI
+# 4. Discovering ALL namespaces on DC1
 Function Get-WMINamespaceEnum {
   [CmdletBinding()]
-  Param(
-    $NS
-  ) 
+  Param($NS) 
   Write-Output $NS
   Get-CimInstance "__Namespace" -Namespace $NS -ErrorAction SilentlyContinue | 
   ForEach-Object { Get-WMINamespaceEnum "$ns\$($_.name)"   }
@@ -31,7 +29,7 @@ $Namespaces = Get-WMINamespaceEnum 'root' | Sort-Object
 $Namespaces |
   Select-Object -First 20
 
-# 6. Counting WMI classes on SRV2
+# 6. Counting WMI classes on DC1
 $WMICLasses = @()
 Foreach ($Namespace in $Namespaces) {
   $WMICLasses += Get-CimClass -Namespace $Namespace
