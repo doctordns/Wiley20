@@ -34,7 +34,7 @@ $WMICLasses = @()
 Foreach ($Namespace in $Namespaces) {
   $WMICLasses += Get-CimClass -Namespace $Namespace
 }
-"There are $($Wmiclasses.count) classes on $(hostname)"
+"There are $($WMIClasses.count) classes on $(hostname)"
 
 # 7. View namespaces on SRV2
 Get-CimInstance -Namespace root -ClassName __NAMESPACE -CimSession SRV2
