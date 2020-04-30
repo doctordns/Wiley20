@@ -4,7 +4,7 @@
 
 
 # 1. Install FS Resource Manager feature on SRV1
-Import-module -Name ServerMANAGER -WarningAction 'SilentlyContinue'
+Import-module -Name ServerManager -WarningAction 'SilentlyContinue'
 $IHT = @{
   Name                   = 'FS-Resource-Manager' 
   IncludeManagementTools = $True
@@ -84,7 +84,7 @@ $S2 | Out-File -FilePath C:\Quota\Demo2.Txt
 
 # 11. Examine Email
 
-    VIEW FROM Outlook
+#    VIEW FROM Outlook
 
 # 12. Test Hard limit quota
 $S | Out-File -FilePath C:\Quota\demo3.Txt    
