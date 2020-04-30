@@ -1,5 +1,4 @@
-﻿# Recipe 13.5
-# Create a performance monitoring Graph
+﻿# 10.6 - Creati8ng a performance monitoring graph
 
 # 1. Load the Forms assembly
 Add-Type -AssemblyName System.Windows.Forms.DataVisualization

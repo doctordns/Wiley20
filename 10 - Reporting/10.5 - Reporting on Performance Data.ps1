@@ -1,6 +1,6 @@
-﻿# Recipe 13.4 - Create Performance Report
+﻿# Recipe 10.5 - Create Performance Report
 # 
-#  Uses CSV output from Recipe 13.3
+#  Uses CSV output from 10.4
 #  Run on SRV1
 
 # 1 - Import the CSV file of counters

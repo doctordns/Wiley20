@@ -1,4 +1,8 @@
-﻿# 1. Run WevtUtil to turn on printer monitoring.
+﻿# 10.8 - Reporting on Printer usage
+#
+# Run on PSRV
+
+# 1. Run WevtUtil to turn on printer monitoring.
 wevtutil.exe sl "Microsoft-Windows-PrintService/Operational" /enabled:true
 
 # 2. Define a function

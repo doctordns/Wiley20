@@ -1,4 +1,6 @@
-﻿# Recipe 3.5 - Reporting on AD Users
+﻿# 10.1 - Reporting on AD Users
+
+# Run on DC1
 
 # 1. Define a function Get-ReskitUser
 #    The function returns objects related to users in reskit.org
@@ -6,7 +8,9 @@ Function Get-ReskitUser {
 # Get PDC Emulator DC
 $PrimaryDC = Get-ADDomainController -Discover -Service PrimaryDC
 # Get Users
-$ADUsers = Get-ADUser -Filter * -Properties * -Server $PrimaryDC
+$P       = "DisplayName","Office","LastLogonDate","BadPWDCount”
+$ADUsers = Get-ADUser -Filter * -Properties $P -Server $PrimaryDC
+
 # Iterate through them and create $Userinfo hash table:
 Foreach ($ADUser in $ADUsers) {
     # Create a userinfo HT
@@ -15,9 +19,7 @@ Foreach ($ADUser in $ADUsers) {
     $Userinfo.DisplayName    = $ADUser.DisplayName
     $UserInfo.Office         = $ADUser.Office
     $Userinfo.Enabled        = $ADUser.Enabled
-    $userinfo.LastLogonDate  = $ADUser.LastLogonDate
-    $UserInfo.ProfilePath    = $ADUser.ProfilePath
-    $Userinfo.ScriptPath     = $ADUser.ScriptPath
+    $Userinfo.LastLogonDate  = $ADUser.LastLogonDate
     $UserInfo.BadPWDCount    = $ADUser.badPwdCount
     New-Object -TypeName PSObject -Property $UserInfo
     }

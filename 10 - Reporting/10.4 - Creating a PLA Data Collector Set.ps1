@@ -1,4 +1,6 @@
-﻿# Recipe 6.3 - Create and add a data collector set
+﻿# 10.4 - Create and add a data collector set
+#
+#  Run on SRV1
 
 # 1. Create and populate a new collector
 $Name = 'SRV1 Collector Set'
