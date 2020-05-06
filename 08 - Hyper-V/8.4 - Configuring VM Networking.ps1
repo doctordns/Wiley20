@@ -8,7 +8,7 @@ Get-VMNetworkAdapter -VMName $VMNAME
 
 # 2. Create a credential 
 $RKAN   = 'Localhost\Administrator'
-$PS     = 'Pa$$w0rd'
+$PS     = 'Pa$$w0rd'e
 $RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
 $T      = 'System.Management.Automation.PSCredential'
 $RKCred = New-Object -TypeName $T -ArgumentList $RKAN, $RKP

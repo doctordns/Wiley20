@@ -16,9 +16,9 @@ Set-VMProcessor @VMHT
 $VMHT = [ordered] @{
     VMName               = 'HV1'
     DynamicMemoryEnabled = $true
-    MinimumBytes         = 512MB
-    StartupBytes         = 1GB
-    MaximumBytes         = 2GB
+    MinimumBytes         = 1GB
+    StartupBytes         = 2GB
+    MaximumBytes         = 6GB
 }
 Set-VMMemory @VMHT
 Start-VM -VMName HV1
