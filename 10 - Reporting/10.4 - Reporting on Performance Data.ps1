@@ -1,6 +1,6 @@
-﻿# Recipe 10.5 - Create Performance Report
+﻿# 10.4 - Create CPU Utilisation Summary
 # 
-#  Uses CSV output from 10.4
+#  Uses CSV output from 10.3
 #  Run on SRV1
 
 # 1 - Import the CSV file of counters
@@ -9,7 +9,7 @@ $File = Get-ChildItem -Path $folder\*.csv -Recurse
 
 # 2. Import the performance counters.
 $Counters = Import-Csv $File.FullName 
-"$($Counters.Count) counters in $($File.FullName)"
+"$($Counters.Count) measurements in $($File.FullName)"
 
 # 3. Fix issue with 1st row in the counters
 $Counters[0] = $Counters[1]
@@ -20,8 +20,8 @@ $HT = @{
  Name = 'CPU'
  Expression = {[System.Double] $_.$cn}
 }
-$Stats = $counters | 
-  Select-Object -Property *,$ht |
+$Stats = $Counters | 
+  Select-Object -Property *,$HT |
     Measure-Object -Property CPU -Average -Minimum -Maximum  
 
 # 5. Add  95th percent value of CPU 
@@ -37,12 +37,11 @@ $AMHT = @{
 }
 Add-Member @AMHT
 
-# 6. Combine the results into a single report:
+# 6. Combine the results into a single variable
 $Stats.CPU95   = $Stats.CPU95.ToString('n2')
 $Stats.Average = $Stats.Average.ToString('n2')
 $Stats.Maximum = $Stats.Maximum.ToString('n2')
 $Stats.Minimum = $Stats.Minimum.ToString('n2')
 
 # 7. Display statistics
-$Stats | 
-  Format-Table -Property Property,Count, Maximum, CPU95, Minimum
+$Stats | Format-Table

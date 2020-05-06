@@ -1,4 +1,4 @@
-﻿# 10.8 - Reporting on Printer usage
+﻿# 10.7 - Reporting on Printer usage
 #
 # Run on PSRV
 
@@ -6,7 +6,6 @@
 wevtutil.exe sl "Microsoft-Windows-PrintService/Operational" /enabled:true
 
 # 2. Define a function
-
  Function Get-PrinterUsage {
 # 2.1 Get events from the print server event log
 $LogName = 'Microsoft-Windows-PrintService/Operational'
@@ -17,6 +16,7 @@ Foreach ($Dp in $Dps) {
    $Document          = [ordered] @{}
 # 2.3 Populate the hash table with properties from the 
 # Event log entry
+   $Document.DateTime  = $DP.TimeCreated
    $Document.Id       = $Dp.Properties[0].value
    $Document.Type     = $Dp.Properties[1].value
    $Document.User     = $Dp.Properties[2].value
@@ -25,6 +25,7 @@ Foreach ($Dp in $Dps) {
    $Document.Port     = $Dp.Properties[5].value
    $Document.Bytes    = $Dp.Properties[6].value
    $Document.Pages    = $Dp.Properties[7].value
+
 
 # 2.4 Create an object for this printer usage entry
  $UEntry = New-Object -TypeName PSObject -Property $Document 
@@ -39,5 +40,16 @@ Foreach ($Dp in $Dps) {
 
 } # End of function
 
-# 3.0 Set and use an alias to get printer usage
-Get-PrinterUsage | Format-Table
+# 3. Create three print jobs
+$PrinterName = "Microsoft Print to PDF"
+'aaaa' | Out-Printer -Name $PrinterName
+'bbbb' | Out-Printer -Name $PrinterName
+'cccc' | Out-Printer -Name $PrinterName
+
+# 4. View PDF output
+Get-ChildItem $Env:USERPROFILE\Documents\*.pdf
+
+# 5. Get printer usage
+Get-PrinterUsage | 
+  Sort-Object -Property  DateTime |
+    Format-Table

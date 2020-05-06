@@ -1,4 +1,6 @@
-﻿# Recipe 11-12 Creating a Hyper-V Status Report
+﻿# 10.8 - Creating a Hyper-V Status Report
+
+# Run on HV1 after creating HVDirect
 
 # 1. Create a basic report object hash table
 $ReportHT = [Ordered] @{}
@@ -31,38 +33,37 @@ $ReportHT.CPUCount = ($Proc |
     Where-Object elementname -Match 'Logical Processor').COUNT
 
 # 5. Add the current host CPU usage
-$Cname = '\\.\processor(_total)\% processor time'
+$Cname = '\processor(_total)\% processor time'
 $CPU = Get-Counter -Counter $Cname
 $ReportHT.HostCPUUsage = $CPU.CounterSamples.CookedValue
 
-# 6. Add the total host physical memory:
+# 6. Add the total host physical memory
 $Memory = Get-Ciminstance -Class Win32_ComputerSystem
 $HostMemory = [float] ( "{0:n2}" -f ($Memory.TotalPhysicalMemory/1GB))
 $ReportHT.HostMemoryGB = $HostMemory
 
-# 7. Add the memory allocated to VMs:
+# 7. Add the memory allocated to VMs
 $Sum = 0
 Get-VM | Foreach-Object {$sum += $_.MemoryAssigned + $Total}
 $Sum = [float] ( "{0:N2}" -f ($Sum/1gb) )
 $ReportHT.AllocatedMemoryGB = $Sum
 
-# 8. Create the host report object:
+# 8. Create the host report object
 $Reportobj = New-Object -TypeName PSObject -Property $ReportHT
 
-# 9. Create report Header
+# 9. Create report header
 $Report =  "Hyper-V Report for: $(hostname)`n"
 $Report += "At: [$(Get-Date)]"
 
-
-# 10 Add report object to report:
+# 10. Add report object to report
 $Report += $Reportobj | Out-String
 
-# 11. Get VM details on the local VM host and create a container array for individual
+# 11. Create VM details array
 #     VM related objects:
 $VMs = Get-VM -Name *
 $VMHT = @()
 
-# 12. Get VM details for each VM into an object added to the hash table container:
+# 12. Get VM details
 Foreach ($VM in $VMs) {
 # Create VM Report hash table
  $VMReport = [ordered] @{}
@@ -77,14 +78,13 @@ Foreach ($VM in $VMs) {
 # Replication Mode/Status
  $VMReport.ReplMode = $VM.ReplicationMode
  $VMReport.ReplState = $Vm.ReplicationState
-
- # Create object from Hash table, add to array
+# Create object from Hash table, add to array
  $VMR = New-Object -TypeName PSObject -Property $VMReport
  $VMHT += $VMR
 }
 
-# 123 Finish creating the report
+# 13. Finish creating the report
 $Report += $VMHT | Format-Table | Out-String
 
-# 13. Display the report:
+# 14. Display the report:
 $Report

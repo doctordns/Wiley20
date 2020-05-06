@@ -14,11 +14,11 @@ $REPORT1HT = @{
   }
 New-FsrmStorageReport @REPORT1HT
 
-# 2. Get reports
+# 2. View FSRM Reports
 Get-FsrmStorageReport * |
  Format-Table -Property Name, ReportType, ReportFormat, Status
 
-# 3. After Storage Report is run, view in filestore
+# 3. Viewing Storage Report Output
 $Path = 'C:\StorageReports\Interactive'
 Get-ChildItem -Path $Path
 
@@ -30,11 +30,13 @@ Invoke-item -Path $Rep
 $XF   = Get-ChildItem -Path $Path\*.xml 
 $XML  = [XML] (Get-Content -Path $XF)
 $Files = $XML.StorageReport.ReportData.Item
-$Files | Where-Object Path -NotMatch '^Windows|^Program|^Users'|
+$Files | Where-Object Path -NotMatch '^Windows|^Program|^Users' |
   Format-Table -Property name, path,
-               @{ name ='Sizemb'
+               @{ name ='Size MB'
+                  alignment = 'right'
                   expression = {(([int]$_.size)/1mb).tostring('N2')}},
                DaysSinceLastAccessed -AutoSize
+
 
 # 6. Create a monthly FSRM Task
 $Date = Get-Date '04:20'
@@ -52,7 +54,6 @@ $REPORT2HT = @{
   Schedule         = $Task 
   ReportType       = 'FilesByOwner'
   MailTo           = 'DoctorDNS@Gmail.Com'
-  LargeFileMinimum = 25MB
 }
 New-FsrmStorageReport @REPORT2HT | Out-Null
 
