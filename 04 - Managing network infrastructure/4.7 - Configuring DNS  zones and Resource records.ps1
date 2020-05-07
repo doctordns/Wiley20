@@ -23,9 +23,9 @@ Add-DnsServerPrimaryZone @ZHT2
 
 # 3. Register DNS for DC1, DC2 
 Register-DnsClient
-Invoke-Command -ComputerName DC1 -ScriptBlock {Register-DnsClient}
+Invoke-Command -ComputerName DC2 -ScriptBlock {Register-DnsClient}
 
-# 4. Check The DNS zones ON DC1
+# 4. Check The DNS zones on DC1
 Get-DNSServerZone -ComputerName DC1
 
 # 5. Add Resource Record to Cookham.Net zone

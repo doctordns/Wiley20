@@ -19,7 +19,7 @@ $DHCPHT = @{
 }
 Set-ItemProperty @DHCPHT
 
-# 4. Restart DHCP DServer 
+# 4. Restart DHCP Server 
 Restart-Service -Name DHCPServer –Force 
 
 # 5. Test service availability

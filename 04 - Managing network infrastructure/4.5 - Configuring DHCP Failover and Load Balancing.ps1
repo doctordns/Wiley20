@@ -33,7 +33,7 @@ $FAILOVERHT = @{
   Name               = 'DC1-DC2'
   ScopeID            = '10.10.10.0'
   LoadBalancePercent = 60
-  SharedSecret       = 'j3RryIsG0d!'
+  SharedSecret       = 'j3RryIsTheB3est!'
   Force              = $true
 }
 Invoke-Command -ComputerName DC1.reskit.org -ScriptBlock {

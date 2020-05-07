@@ -7,7 +7,7 @@ Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature -Name DNS -IncludeManagementTools  
 
 # 2. Set Key DNS Server Options:
-# Disable recursion on this server
+# Enable recursion on this server
 Set-DnsServerRecursion -Enable $true
 # Configure DNS Server cache maximum size
 Set-DnsServerCache  -MaxKBSize 20480  # 28 MB

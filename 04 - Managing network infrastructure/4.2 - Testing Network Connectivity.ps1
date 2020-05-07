@@ -8,9 +8,9 @@ Test-Connection -ComputerName SRV2 -Count 1 -IPv4
 Test-NetConnection -ComputerName SRV2 -CommonTCPPort WinRM
 
 # 2. Test Basic Connectivity to DC1
-Test-Connection -ComputerName DC1.Reskit.Org -Count 1 -IPv4
+Test-Connection -ComputerName DC1.Reskit.Org -Count 1
 
-# 3. Check Connectivi8ty to SMP port and to LDAP port
+# 3. Check Connectivity to SMP port and to LDAP port
 Test-NetConnection -ComputerName DC1.Reskit.Org -CommonTCPPort SMB
 Test-NetConnection -ComputerName DC1.Reskit.Org -Port 389
 

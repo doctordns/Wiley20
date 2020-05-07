@@ -13,7 +13,7 @@ $SCOPEHT = @{
 }
 Add-DhcpServerV4Scope @SCOPEHT
 
-# 2. Get Scopes from the server
+# 2. Get IPV4 Scopes from the server
 Get-DhcpServerv4Scope -ComputerName DC1.Reskit.Org
 
 # 3. Set Server Wide Option Values
