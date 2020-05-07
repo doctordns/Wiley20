@@ -57,7 +57,7 @@ Get-Disk |
 Get-Disk |
   Format-Table -AutoSize
 
-# 4. Create a F: volume in Disk 1
+# 4. Create an F: volume in Disk 1
 $NVHT1 = @{
   DiskNumber   = 1 
   FriendlyName = 'Storage(F)' 
@@ -66,15 +66,14 @@ $NVHT1 = @{
 }
 New-Volume @NVHT1
 
-# 5. Now create a partition in Disk 2
+# 5. Now create a partition on Disk 2
 New-Partition -DiskNumber 2  -DriveLetter G -Size 42gb
 
 # 6. Create a second partition H:
 New-Partition -DiskNumber 2  -DriveLetter H -UseMaximumSize
 
 # 7. View Volumes on SRV1
-Get-Volume |
-  Sort-Object -Property DriveLetter
+Get-Volume 
 
 # 8. Format G: and H:
 # Format G:

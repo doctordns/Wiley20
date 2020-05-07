@@ -28,8 +28,7 @@ Get-NTFSAccess -Path C:\Secure1\Secure.Txt |
 
 # 6. Create Sales group if it does not exist
 try {
-  Get-ADGroup -Identity 'Sales' -ErrorAction Stop |
-    Out-Null
+  Get-ADGroup -Identity 'Sales' -ErrorAction Stop 
 }
 catch {
   New-ADGroup -Name Sales -GroupScope Universal  |
@@ -76,7 +75,7 @@ Add-NTFSAccess @AHT3
 Get-NTFSAccess -Path C:\Secure1 |
   Format-Table -AutoSize
 
-# 13. Get ACL on the file
+# 13. Get ACL of the file
 Get-NTFSAccess -Path C:\Secure1\Secure.Txt |
   Format-Table -AutoSize
 

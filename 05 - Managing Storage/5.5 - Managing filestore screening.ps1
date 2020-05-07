@@ -34,13 +34,14 @@ $FSTHT = @{
 Copy-Item  @FSTHT
 
 # 6. Setup Active Email Notification
-$Body = "You attempted to save an executable program. This is not allowed."
+$Body = "You attempted to save an executable program. " +
+        "This is not allowed."
 $FSRMA = @{
   Type             = 'Email'
   MailTo           = "[Admin Email];[File Owner]" 
   Subject          = "Warning: attempted to save an executable file" 
   Body             = $Body
-  RunLImitInterval = 60
+  RunLimitInterval = 60
 }
 $Notification = New-FsrmAction @FSRMA
 $FSFS = @{
@@ -56,14 +57,14 @@ Set-FsrmFileScreen @FSFS
 Get-FsrmSetting | 
   Format-List -Property "*NotificationLimit"
 
-# 8. ChangeignFSRM notification limits  
+# 8. Changing FSRM notification limits  
 $FSRMSHT = @{
   CommandNotificationLimit = 1
   EmailNotificationLimit   = 1
   EventNotificationLimit   = 1
   ReportNotificationLimit  = 1
 }
-Set-FsrmSetting @FSRMSHt
+Set-FsrmSetting @FSRMSHT
 
 
 # 9. Re-test the file screen to check the the action

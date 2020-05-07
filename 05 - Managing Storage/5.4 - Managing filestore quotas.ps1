@@ -82,13 +82,9 @@ $S2 = '+'.PadRight(.66MB)
 $S2 | Out-File -FilePath C:\Quota\Demo2.Txt
 
 
-# 11. Examine Email
-
-#    VIEW FROM Outlook
-
-# 12. Test Hard limit quota
+# 11. Test Hard limit quota
 $S | Out-File -FilePath C:\Quota\demo3.Txt    
 
-# 13. View Folder
+# 12. View Folder
 Get-ChildItem -Path C:\Quota |
    Measure-Object -Sum -Property Length

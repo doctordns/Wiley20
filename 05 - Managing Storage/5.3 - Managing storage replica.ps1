@@ -4,7 +4,7 @@
 
 #  Prepare the VM Host
 
-# 0. Add a VHDs to SRV2 VM
+# 0. Add VHDs to SRV2 VM
 #    Run this on the Hyper-V VM Host
 # Stop the vm
 Stop-VM -Name SRV2
@@ -16,7 +16,7 @@ $Par = Split-Path -Path $VM.HardDrives[0].Path
 $NewPath1 = Join-Path -Path $par -ChildPath FDrive.VHDX
 $NewPath2 = Join-Path -Path $Par -ChildPath GDrive.VHDX
 $D1 = New-VHD -Path $NewPath1 -SizeBytes 128GB -Dynamic
-$D2 = New-VHD -Path $NewPath2 -SIzebytes 128GB -Dynamic
+$D2 = New-VHD -Path $NewPath2 -SizeBytes 128GB -Dynamic
 
 # Add a new SCSI Controller to SRV2
 $C = (Get-VMScsiController -VMName SRV2).count
@@ -85,7 +85,7 @@ Install-WindowsFeature -Name Storage-Replica -IncludeManagementTools
 # 5. Restart SRV1 to finish the installation process
 Restart-Computer
 
-###  Relogin to SRV1 an run the remainder of ths script
+###  Relogin to SRV1 and run the remainder of this script
 
 # 6. Add SR Feature to SRV2 Remotely
 $SB = {
@@ -120,7 +120,6 @@ Test-SRTopology @TSTHT
 $File = Get-ChildItem C:\Foo\testsr* | 
           Sort-Object -Property LastWriteTime -Descending |
             Select-Object -First 1
-
 Start-Process -Filepath $File
 
 # 10. Create an SR Replica Partnership
