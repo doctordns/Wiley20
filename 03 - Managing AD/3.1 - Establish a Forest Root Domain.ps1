@@ -48,7 +48,7 @@ Get-ADRootDSE |
 
 # 7. Examine ADDS forest
 Get-AdForest | 
-  Format-Table -Property *master*, globaL*, Domains
+  Format-Table -Property *master*, global*, Domains
 
 # 8. View details of the domain
 Get-ADDomain | 

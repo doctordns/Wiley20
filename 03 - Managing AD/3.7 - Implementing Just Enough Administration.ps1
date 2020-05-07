@@ -65,7 +65,7 @@ $SCHT = @{
 Register-PSSessionConfiguration @SCHT
 
 # 7. Check What the User Can Do
-Get-PSSessionCapability -ConfigurationName RkDnsAdmins -Username 'Reskit\Jerryg' |
+Get-PSSessionCapability -ConfigurationName RkDnsAdmins -Username 'Reskit\JerryG' |
   Sort-Object -Property Module
 
 # 8. Create Credentials for user JerryG
@@ -92,7 +92,7 @@ Invoke-Command -ScriptBlock $SB1 @ICMHT |
 Invoke-Command -ScriptBlock $SB2 @ICMHT
 
 # 12. Get DNSServer commands available to JerryG
-$C = Invoke-command -ScriptBlock $SB3 @ICMHT 
+$C = Invoke-Command -ScriptBlock $SB3 @ICMHT 
 "$($C.Count) DNS commands available"
 
 # 13. Examine the contents of the Transcripts folder:

@@ -73,7 +73,7 @@ New-ADUser @NewUserHT
 
 # 7. See the users that exist so far
 Get-ADUser -Filter * -Properties DisplayName | 
-  Format-Table -Property Name, Displayname, SamAccountName
+  Format-Table -Property Name, DisplayName, SamAccountName
 
 # 8. Remove via a Get | Remove Paterm
 Get-ADUser -Identity 'CN=TBR1,OU=IT,DC=Reskit,DC=Org' |

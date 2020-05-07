@@ -3,7 +3,7 @@
 # Uses KapDC1 (a workgroup server with nothing else but powershell loaded)
 
 # 1. Import the ServerManager module on KAPDC1
-Import-Module ServerManager -AWarningAction SilentlyContinue
+Import-Module ServerManager -WarningAction SilentlyContinue
 
 # 2. Install the AD Domain Services feature and Management Tools
 $Features = 'AD-Domain-Services'
@@ -13,7 +13,7 @@ Install-WindowsFeature -Name $Features -IncludeManagementTools
 Test-NetConnection -ComputerName DC1
 
 # 4. Import the AD DS Deployment Module
-Import-Module -Name ADDSDeployment @EWA
+Import-Module -Name ADDSDeployment -WarningAction SilentlyContinue
 
 # 5. Promote KAPDC1 to be DC in its own forest
 $ADINSTALLHT = @{
@@ -62,7 +62,7 @@ $SB = {
 # 10. Create Credentials to Run A Command on DC1
 $URK   = 'Reskit\Administrator'
 $PRK   = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
-$CREDRK = New-Object System.Management.Automation.PSCredential $URK, $PRK
+$CREDRK =  [PSCredential]::New($URK,$PRK)
 
 # 11. Set WinRM
 $PATH = 'WSMan:\localhost\Client\TrustedHosts'

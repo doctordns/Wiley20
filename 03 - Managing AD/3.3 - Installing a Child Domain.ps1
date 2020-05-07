@@ -6,8 +6,9 @@
 # 1. Import the ServerManager module
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
 
-# 2. Check DC1 can be resolved and  can be reached over 445 and 389 from DC2
+# 2. Check DC1 can be resolved and  can be reached over 445 and 389 from UKDC1
 Resolve-DnsName -Name DC1.Reskit.Org -Type A
+Test-NetConnection -ComputerName DC1.Reskit.Org -Port 445
 Test-NetConnection -ComputerName DC1.Reskit.Org -Port 389
 
 # 3. Add the AD DS features on UKDC1
@@ -38,5 +39,5 @@ Install-ADDSDomain @INSTALLHT
 # 5. Look at AD forest
 Get-ADForest -Server UKDC1.UK.Reskit.Org
 
-# 6. Look at AD forest
+# 6. Look at UK domain
 Get-ADDomain -Server UKDC1.UK.Reskit.Org
