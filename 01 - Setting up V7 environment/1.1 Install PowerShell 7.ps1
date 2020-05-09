@@ -3,27 +3,44 @@
 # Run on CL1
 # Run using an elevated Windows PowerShell 5.1 host
 
-# 1. Create local folders and Set-Location to C:\Foo
+# 1. Install latest versions of Nuget and PowerShellget
+Install-PackageProvider Nuget -MinimumVersion 2.8.5.201 -Force |
+  Out-Null
+Install-Module -Name PowerShellGet -Force -AllowClobber 
+
+# 2. Create local folder C:\Foo
 $IT = @{
-  ItemType = 'Directory';
+  ItemType    = 'Directory';
   ErrorAction = 'SilentlyContinue'
 }
-New-Item -Path C:\Foo @IT |
-  Out-Null
-New-Item -Path 'C:\Program Files\PowerShell\Modules' @IT |
-  Out-Null
-$Path = 'C:\Users\Administrator\Documents\PowerShell\Modules'
-New-Item -Path $Path @IT 
-Set-Location -Path C:\Foo
+New-Item -Path C:\Foo @IT | Out-Null
+Set-Location C:\Foo
 
-# 2. Download PowerShell 7 installation script
+
+# 3. Download PowerShell 7 installation script
 $URI = "https://aka.ms/install-powershell.ps1"
 Invoke-RestMethod -Uri $URI | 
   Out-File -FilePath C:\Foo\Install-PowerShell.ps1
 
-# 3. Just in case, set Executionn Policy to unrestricted
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
-
 # 4. Install PowerShell 7
-C:\Foo\Install-PowerShell.ps1 -UseMSI -Quiet -AddExplorerContextMenu -EnablePSRemoting |
-  Out-Null
+C:\Foo\Install-PowerShell.ps1 -UseMSI -Quiet -AddExplorerContextMenu -EnablePSRemoting
+
+# 5. Examine the installation folder
+Get-Childitem -Path 'C:\Program Files\PowerShell\7' -Recurse |
+  Measure-Object -Property length -Sum
+
+# 6. Examine Powershell configuratin JSON file
+$Path = "$Env:ProgramFiles\PowerShell\7\powershell.config.json"
+Get-Content -Path $Path
+
+# 7. Run PowerShell 7 console and then...
+$PSVersionTable
+
+# 8. view Modules folders
+$ModFolders = $Env:psmodulepath -split ';'
+$I = 0
+$ModFolders | 
+  ForEach-Object {"$I    $_";$I++}
+
+
+
