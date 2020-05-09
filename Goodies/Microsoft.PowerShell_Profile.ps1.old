@@ -3,8 +3,6 @@
 "In Customisations for [$($Host.Name)]"
 "On $(hostname)"
 
-# Setup console and window
-
 # Set Format enum limit
 $FormatEnumerationLimit = 99
 
