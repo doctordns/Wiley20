@@ -6,7 +6,7 @@
 # Set Format enum limit
 $FormatEnumerationLimit = 99
 
-# Set some command Defaults
+# Set some command Dgit pushefaults
 $PSDefaultParameterValues = @{
   "*:autosize"       = $true
   'Receive-Job:keep' = $true
@@ -15,12 +15,12 @@ $PSDefaultParameterValues = @{
 
 # Set home to C:\Foo for ~, then go there
 New-Item C:\Foo -ItemType Directory -Force -EA 0 | out-null
-$Provider = Get-PSProvider FileSystemfilesystem
-$Provider.home = 'C:\Foo'
-Set-Location ~
+$Provider = Get-PSProvider FileSystem
+$Provider.Home = 'C:\Foo'
+Set-Location -Path ~
 Write-Host 'Setting home to C:\Foo'
 
-# Add a new function Get-HelpDetailed an
+# Add a new function Get-HelpDetailed and set an alias
 Function Get-HelpDetailed { 
     Get-Help $args[0] -Detailed
 } # END Get-HelpDetailed Function
@@ -32,7 +32,7 @@ Set-Alias ghd   Get-HelpDetailed
 # Reskit Credential
 $Urk = 'Reskit\Administrator'
 $Prk = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
-$Credrk = New-Object system.management.automation.PSCredential $Urk, $Prk
+$Credrk = [pscredential]::New($Urk, $Prk)
 "`$Credrk created for $($credrk.username)"
 
 Write-Host "Completed Customisations to $(hostname)"
