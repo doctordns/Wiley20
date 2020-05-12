@@ -1,8 +1,8 @@
 # 1.4 - Creating an Internal PowerShell Repository
 # 
-# Run from SRV1 (SRV1.Reskit.Org)
+# Run from DC1
 
-# 1. Create Fepository Folder
+# 1. Create Repository Folder
 $LPATH = 'C:\RKRepo'
 New-Item -Path $LPATH -ItemType Directory | Out-Null
 
@@ -26,7 +26,7 @@ Set-Alias GHW Get-HelloWorld
 $HS | Out-File C:\HW\HW.psm1
 
 # 5. Load and Test the Module
-Import-Module -Name C:\HW -verbose
+Import-Module -Name C:\HW -Verbose
 GHW
 
 # 6. Create a Module Manifest for this module
@@ -36,11 +36,13 @@ $NMHT = @{
   Description       = 'Hello World module' 
   Author            = 'DoctorDNS@Gmail.com' 
   FunctionsToExport =  'Get-HelloWorld'
+  ModuleVersio      = '1.0.0'
 }
+New-ModuleManifest @NMHT 
 
 # 7. Create the repository as trusted
 #    Repeat on every host that uses this repository
-$Path = '\\SRV1.Reskit.Org\RKRepo'
+$Path = '\\DC1.Reskit.Org\RKRepo'
 $REPOHT = @{
   Name               = 'RKRepo'
   SourceLocation     = $Path
@@ -52,11 +54,11 @@ Register-PSRepository @REPOHT
 # 8. View configured repositories
 Get-PSRepository
 
-# 9. Publish the module to thee repository
-Publish-Module -Path C:\HW -Repository RKRepo
+# 9. Publish the module to the repository
+Publish-Module -Path C:\HW -Repository RKRepo -Force 
 
-# 10. See Repo folder
+# 10. View the repository folder
 Get-ChildItem -Path C:\RKRepo
 
-# 11. Find the modujle in the RKRepo repository
+# 11. Find the module in the RKRepo repository
 Find-Module -Repository RKRepo

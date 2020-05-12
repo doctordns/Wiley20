@@ -34,56 +34,50 @@ $EXTHT = @{
   AddExplorerContextMenu = $true
   EnablePSRemoting       = $true
 }
-C:\Foo\Install-PowerShell.ps1 @EXTHT
-
+C:\Foo\Install-PowerShell.ps1 @EXTHT | Out-Null
 
 # 7. Examine the installation folder
 Get-Childitem -Path $env:ProgramFiles\PowerShell\7 -Recurse |
   Measure-Object -Property Length -Sum
 
-# 8. Examine Powershell configuratin JSON file
-$Path = "$Env:ProgramFiles\PowerShell\7\powershell.config.json"
-Get-Content -Path $Path
-
-# 9. View Module folders
+# 8. View Module folders
 #  View module folders for autoload
 $I = 0
 $env:PSModulePath -split ';' |
   Foreach-Object {
-    "[{0:N0}]   {1}" -f $I++, $_
-  }
+    "[{0:N0}]   {1}" -f $I++, $_}
 
-# 10. View Profile File locations
+# 9. View Profile File locations
 # Inside ISE
-$profile | Format-List -Property *host* -Force
+$profile | 
+  Format-List -Property *host* -Force
 # from WIndows PowerShell Console
-powershell -command '$Profile| format-list -force -property *host*'
+powershell -command '$Profile | 
+  Format-List -force -property *host*'
 
 
 # Run remainder in Powershell 7 console. 
 
 
 
-# 11. Run PowerShell 7 console and then...
+# 10. Run PowerShell 7 console and then...
 $PSVersionTable
 
-# 12. View Modules folders
+# 11. View Modules folders
 $ModFolders = $Env:psmodulepath -split ';'
 $I = 0
 $ModFolders | 
   ForEach-Object {"[{0:N0}]   {1}" -f $I++, $_}
 
-# 13 View Profile Locations
+# 12. View Profile Locations
 $PROFILE | Format-List -Property *Host* -Force
 
-# 14 Create  Current user/Current host profile
+# 13 Create  Current user/Current host profile
 $URI = 'https://raw.githubusercontent.com/doctordns/Wiley20/master/' +
        'Goodies/Microsoft.PowerShell_Profile.ps1'
 $ProfileFile = $Profile.CurrentUserCurrentHost
 New-Item $ProfileFile -Force -WarningAction SilentlyContinue |
    Out-Null
-
-# 15. Download Sample
 (Invoke-WebRequest -Uri $uri -UseBasicParsing).Content | 
   Out-File -FilePath  $ProfileFile
 
