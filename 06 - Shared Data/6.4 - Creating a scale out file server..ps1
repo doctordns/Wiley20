@@ -6,7 +6,7 @@
 #  RUN ON FS2
 
 # 1. Setup FS2 to support ISCSI
-# Adjust the iSCSI service to auto start, then start the service and reboot.
+# Adjust the iSCSI service to auto start, then start the service.
 Set-Service MSiSCSI -StartupType 'Automatic'
 Start-Service MSiSCSI
 
@@ -31,15 +31,15 @@ $ISD |
 $ISD | 
   Set-Disk -Isreadonly $False
 
-# 3. Add File Server features to FS1
-Import-Module -Name ServerManager -WarningAction SilentlyContinue
+# 3. Add File Server features to FS2
+
 $Features = 'FileAndStorage-Services',
             'File-Services',
             'FS-FileServer'
 Install-WindowsFeature -Name $Features -IncludeManagementTools |
   Out-Null
 
-# 4. Adding clustering features to FS1/FS1
+# 4. Adding clustering features to FS1/FS2
 Import-Module -Name ServerManager -WarningAction SilentlyContinue
 $IHT = @{
   Name                   = 'Failover-Clustering'
