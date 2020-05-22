@@ -32,7 +32,7 @@ $ISD |
   Set-Disk -Isreadonly $False
 
 # 3. Add File Server features to FS2
-
+Import-Module -Name ServerManager -WarningAction SilentlyContinue
 $Features = 'FileAndStorage-Services',
             'File-Services',
             'FS-FileServer'
@@ -54,8 +54,8 @@ Restart-Computer -ComputerName FS2 -Force
 
 # 6. Testing Cluster nodes
 Import-Module -Name FailoverClusters -WarningAction SilentlyContinue
-$CHECKOUTPUT = 'C:\Foo\Clustercheck'
-Test-Cluster  -Node FS1, FS2  -ReportName $CHECKOUTPUT | Out-Null
+$CheckOutput = 'C:\Foo\Clustercheck'
+Test-Cluster  -Node FS1, FS2  -ReportName $CheckOutput | Out-Null
 
 # 7. View the cluster Validation test results
 $COFILE = "$CheckOutput.htm"
@@ -78,7 +78,7 @@ $SBDC1 = {
 Invoke-Command -ComputerName DC1 -ScriptBlock $SBDC1 | Out-Null
 
 # 10. Set the cluster Witness
-Set-ClusterQuorum -NodeAndFileShareMajority \\DC1\quorum
+Set-ClusterQuorum -NodeAndFileShareMajority \\DC1\Quorum
 
 # 11. Ensuring iSCSI disks are connected
 $SB = {
