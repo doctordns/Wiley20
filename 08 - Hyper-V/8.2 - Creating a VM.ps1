@@ -14,7 +14,7 @@ If (-Not (Test-Path -Path $ISOPath)) {
     Throw "ISO Image [$ISOPath] NOT found"
 }
 
-# 3. Import the DISM Module and Display the OSs on this ISO
+# 3. Import the DISM Module 
 Import-Module -Name DISM -WarningAction SilentlyContinue
 
 # 4. Mount ISO Image 
@@ -25,7 +25,6 @@ $ISOImage = Get-DiskImage -ImagePath $ISOPath | Get-Volume
 $ISODrive = [string] $ISOImage.DriveLetter + ":"
 Get-WindowsImage -ImagePath $ISODrive\sources\install.wim | 
   Format-Table -Property ImageIndex, Imagename, Imagedescription -Wrap
-  
 Dismount-DiskImage -ImagePath $ISOPath | Out-Null
 
 # 6.  Create a new VM

@@ -30,12 +30,12 @@ $VSHT = @{
 }
 New-VMSwitch @VSHT
 
-# 5. Connect VM1 to the switch
+# 5. Connect HVDirect to the switch
 Connect-VMNetworkAdapter -VMName $VMNAME -SwitchName External
 
 # 6. Enable spoofing From VM Host
 #    Run this command on the VM Host that hosts HV1
-Get-VMNetworkAdapter -VMName $VMName | 
+Get-VMNetworkAdapter -VMName HV1 | 
   Set-VMNetworkAdapter -MacAddressSpoofing On
 
 # 7. Get VM networking information

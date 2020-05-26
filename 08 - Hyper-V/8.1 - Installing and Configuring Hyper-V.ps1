@@ -2,8 +2,8 @@
 
 # Run on HV1
 
-# If HV1 is a VM, configure it
-# On the Hyper-V Host running HV1
+# 0. Configure HV1 VM
+# Run on the Hyper-V Host running HV1
 Stop-VM -VMName HV1
 # Enable nested virtualization and set processor count for HV1
 $VMHT = @{
@@ -16,12 +16,13 @@ Set-VMProcessor @VMHT
 $VMHT = [ordered] @{
     VMName               = 'HV1'
     DynamicMemoryEnabled = $true
-    MinimumBytes         = 1GB
-    StartupBytes         = 2GB
+    MinimumBytes         = 4GB
+    StartupBytes         = 4GB
     MaximumBytes         = 6GB
 }
 Set-VMMemory @VMHT
 Start-VM -VMName HV1
+#  End of configuring HV1 on VM host
 
 #  Start of Script
 
@@ -31,7 +32,7 @@ Import-Module -Name ServerManager -WarningAction SilentlyContinue
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 
 # 2. Reboot HV1 to complete the installation
-Restart-Computer -ComputerName HV1
+Restart-Computer 
 
 # 3. Create new folders to hold VM details and disks
 $VMS  = 'C:\VM\VMS'

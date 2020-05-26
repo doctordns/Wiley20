@@ -4,7 +4,7 @@
 
 # 1. Turn off the HVDirect VM
 $VMName = 'HVDirect'
-Stop-VM -VMName $VMname 
+Stop-VM -VMName $VMName 
 Get-VM -VMName $VMName
 
 # 2. Set the StartupOrder in the VM's BIOS
@@ -22,8 +22,8 @@ $VMHT = [ordered] @{
   VMName               = $VMName
   DynamicMemoryEnabled = $true
   MinimumBytes         = 768MB
-  StartupBytes         = 960MB
-  MaximumBytes         = 1GB
+  StartupBytes         = 2GB
+  MaximumBytes         = s4GB
 }
 Set-VMMemory @VMHT
 Get-VMMemory -VMName $VMName
@@ -32,7 +32,7 @@ Get-VMMemory -VMName $VMName
 Add-VMScsiController -VMName $VMName
 Get-VMScsiController -VMName $VMName
 
-# 6. Restart the VM
+# 6. Restart the HVDirect VM
 Start-VM -VMName $VMName
 Wait-VM -VMName $VMName -For IPAddress
 

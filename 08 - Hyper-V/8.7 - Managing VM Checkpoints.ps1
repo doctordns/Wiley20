@@ -1,6 +1,6 @@
 ﻿# 8.7 - Managing VM Checkpoints
 
-# Run on HV1 after creatign HVDiret VM
+# Run on HV1 after creating HVDirect VM
 
 # 1. Create credentials for HVDirect VM
 $RKUN   = 'Reskit\Administrator'
@@ -9,7 +9,7 @@ $RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
 $T      = 'System.Management.Automation.PSCredential'
 $RKCred = New-Object -TypeName $T -ArgumentList $RKUN,$RKP
 
-# 2. Look at C:\ in HVDirect before startiung
+# 2. Look at C:\ in HVDirect before starting
 $VMName = 'HVDirect'
 $ICHT = @{
   VMName      = $VMName
@@ -18,7 +18,7 @@ $ICHT = @{
 }
 Invoke-Command @ICHT
 
-# 3. Create a Checkpoint of HVDirect
+# 3. Create a checkpoint of HVDirect
 $CPHT = @{
   VMName       = $VMName
   SnapshotName = 'Checkpoint1'
@@ -31,7 +31,7 @@ $Parent = Split-Path -Parent (Get-VM -Name $VMName |
               Select-Object -First 1
 Get-ChildItem -Path $Parent
 
-# 5. Create some content in a file on HVDIrect and display it
+# 5. Create some content in a file on HVDirect and display it
 $SB = {
    $FileName1 = 'C:\File_After_Checkpoint_1'
    'After Checkpoint 1' | 
@@ -48,7 +48,6 @@ Invoke-Command @ICHT
 # 6. Take a second checkpoint
 $SNHT = @{
   VMName        = $VMName
-#  ComputerName  = 'HV1'  
   SnapshotName  = 'Checkpoint2'
 }
 Checkpoint-VM @SNHT
@@ -60,7 +59,7 @@ Get-VMCheckPoint -VMName $VMName
 Get-ChildItem -Path $Parent
 
 # 9. Create and display another file in HVDirect
-#    (after you have taken Chgeckpoint2)
+#    (after you have taken Checkpoint2)
 $SB = {
   $FileName2 = 'C:\File_After_Checkpoint_2'
   'After Checkpoint 2' | 
@@ -75,7 +74,7 @@ $ICHT = @{
 }
 Invoke-Command @ICHT
 
-# 10. Restore the VM back to the checkpoint named Checkpoin1
+# 10. Restore the VM back to the checkpoint named Checkpoint1
 $CP1 = Get-VMCheckpoint -VMName $VMName -Name Checkpoint1
 Restore-VMCheckpoint -VMSnapshot $CP1 -Confirm:$false
 Start-VM -Name $VMName
@@ -108,12 +107,9 @@ Invoke-Command @ICHT
 # 14. View Checkpoints for HVDirect
 Get-VMCheckpoint -VMName $VMName
 
-# 15. View VM Data Files
-Get-ChildItem -Path $Parent
-
-# 16. Remove all the checkpints for HVDirect
+# 15. Remove all the checkp0ints for HVDirect
 Get-VMCheckpoint -VMName $VMName |
   Remove-VMSnapshot
 
-# 17. Check VM data files again
+# 16. Check VM data files again
 Get-ChildItem -Path $Parent

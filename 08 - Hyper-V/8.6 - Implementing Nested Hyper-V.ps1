@@ -44,7 +44,7 @@ $SB = {
   Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
 }
 $IHT  = @{
-  VMName      =  $VMName
+  VMName      = $VMName
   ScriptBlock = $SB 
   Credential  = $CredRK
 }
