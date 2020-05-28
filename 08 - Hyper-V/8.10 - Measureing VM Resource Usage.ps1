@@ -4,10 +4,10 @@
 #  Ensure HVDirect is running on HV2.
 
 # 1. Get-VMs on HV2
-$VM = Get-VM -VMName *
+$VM = Get-VM 
 $VM
 
-# 2. Enable resource monitoring of HV2
+# 2. Enable resource monitoring of HVDirect
 Enable-VMResourceMetering -VM $VM
 
 # 3. Start VM if needed

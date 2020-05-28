@@ -2,8 +2,12 @@
 
 # Run on HV1
 
-# 1. View the PSDirect VM on HV1 and verify that it is turned off and not saved
-Get-VM -Name HVDirect -Computer HV1
+# 0 Revert VMs before starting
+Remove-VM -Name HVDirect -ComputerName HV2 -Force
+Start-VM HVDirect -ComputerName HV1
+
+# 1. View the HVDirect VM on HV1 and verify that it is turned off and not saved
+Get-VM -Name HVDirect 
 
 # 2. Get the VM configuration location 
 (Get-VM -Name HVDirect).ConfigurationLocation 
@@ -12,7 +16,7 @@ Get-VM -Name HVDirect -Computer HV1
 Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path
 
-# 4. Move the VM's to the C\HVD_New folder
+# 4. Move the VM's to the C:\HVD_New folder
 $MHT = @{
   Name                   = 'HVDirect'
   DestinationStoragePath = 'C:\HVD_NEW'
@@ -27,7 +31,7 @@ Get-VMHardDiskDrive -VMName HVDirect |
 # 6. Get the VM details for VMs from HV2
 Get-VM -ComputerName HV2
 
-# 7. Enable VM migration from both HV1 and HV2
+# 7. Enable VM migration on both HV1 and HV2
 Enable-VMMigration -ComputerName HV1, HV2
 
 # 8. Configure VM Migration on both hosts
@@ -54,7 +58,7 @@ $Finish = Get-Date
 
 # 10. Display the time taken to migrate
 $OS = "Migration took: [{0:n2}] minutes"
-($os -f ($($finish-$start).TotalMinutes))
+$OS -f ($($Finish-$Start).TotalMinutes)
 
 # 11. Check the VMs on HV1
 Get-VM -ComputerName HV1
@@ -63,7 +67,7 @@ Get-VM -ComputerName HV1
 Get-VM -ComputerName HV2
 
 # 13. Look at the details of the moved VM
-((Get-VM -Name HVDirect -Computer HV2).ConfigurationLocation)
+(Get-VM -Name HVDirect -Computer HV2).ConfigurationLocation
 Get-VMHardDiskDrive -VMName HVDirect -Computer HV2  |
   Format-Table -Property VMName, Path
 

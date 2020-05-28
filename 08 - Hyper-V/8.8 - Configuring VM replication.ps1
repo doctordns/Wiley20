@@ -43,16 +43,17 @@ $VMCHT = @{
 }
 Set-VMHost @VMCHT
 # Create external switch on HV2
-$NIC = Get-NetIPConfiguration | Select-Object -First 1
-New-VMSwitch -Name External -NetAdapterName $NIC.InterfaceAlias
+# Restart HV2 VM
 Start-VM -VMName HV2
 Wait-VM -VMName HV2 -For IPAddress
 
 # 0.2 Login to HV2 to add Hyper-V feature to HV2
-# 
 # Install the Hyper-V feature on HV2
 Import-Module -Name Servermanager -WarningAction SilentlyContinue
 Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
+# Create a Switch in HV2
+$NIC = Get-NetIPConfiguration | Select-Object -First 1
+New-VMSwitch -Name External -NetAdapterName $NIC.InterfaceAlias
 # Reboot HV2 to complete the installation of Hyper-V
 Restart-Computer -ComputerName HV2
 
@@ -65,7 +66,8 @@ $SB1 = {
 }
 Invoke-Command -ComputerName DC1 -ScriptBlock $SB1
 $SB2 = {
-  Set-ADComputer -Identity HV2 -TrustedForDelegation $True}
+  Set-ADComputer -Identity HV2 -TrustedForDelegation $True
+}
 Invoke-Command -ComputerName DC1 -ScriptBlock $SB2
 
 # 2. Reboot the HV1 and HV2
@@ -116,16 +118,13 @@ Measure-VMReplication -ComputerName HV2
 Measure-VMReplication -ComputerName HV2
 
 # 10. Test HVDirect failover from HV1 to HV2
-$SB = {
-  $VM = Start-VMFailover -AsTest -VMName HVDirect -Confirm:$false
-  Start-VM $VM
-}
-Invoke-Command -ComputerName HV2 -ScriptBlock $SB
+$VM = Start-VMFailover -AsTest -VMName HVDirect -Confirm:$false
+Start-VM $VM
 
 # 11. View the status of VM on HV2
 Get-VM -ComputerName HV2
 
-# 12. Get VM details in VM replica source
+# 12. Get VM details in replica source
 $RKUN   = 'Reskit\Administrator'
 $PS     = 'Pa$$w0rd'
 $RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
@@ -135,8 +134,8 @@ $CREDHT = @{
 }
 $RKCred = New-Object @CREDHT
 $SB1 = {
-  $SB1a = $ICMHT = @{
-    VMName       = 'HVdirect' 
+  $SB1a = @{
+    VMName       = 'HVDirect' 
     ScriptBlock  = {hostname;ipconfig}
     Credential   = $using:RKCred
   }
@@ -146,7 +145,7 @@ Invoke-Command -Computer HV1 -Script $SB1
 
 # 13. Get VM details in replica test VM on HV2
 $SB2 = {
-  $SB2a = $ICMHT = @{
+  $SB2a = @{
     VMName       = 'HVDirect - Test' 
     ScriptBlock  = {hostname;ipconfig}
     Credential   = $using:RKCred
@@ -156,10 +155,7 @@ $SB2 = {
 Invoke-Command -Computer HV2 -Script $SB2
 
 # 14. Stop the failover test
-$SB3 = {
-  Stop-VMFailover -VMName HVDirect
-}
-Invoke-Command -ComputerName HV2 -ScriptBlock $SB3
+Stop-VMFailover -VMName HVDirect
 
 # 15. View the status of VMs on HV1 and HV2 after failover stopped
 Get-VM -ComputerName HV1
@@ -175,11 +171,11 @@ Get-VMNetworkAdapter -VMName HVDirect -ComputerName HV2 |
   Set-VMNetworkAdapterFailoverConfiguration @NAHT 
 Connect-VMNetworkAdapter -VMName HVDirect -SwitchName External
 
-# 17. Stop VM1 on HV2 prior to performing a planned failover
+# 17. Stop HVDirect on HV1 prior to performing a failover
 Stop-VM HVdirect -ComputerName HV1
 
 # 18. Start VM failover from HV1
-Start-VMFailover -VMName HVDirect -ComputerName HV2 -Confirm:$false
+Start-VMFailover -VMName HVDirect -Confirm:$false
 
 # 19. Complete the failover
 $CHT = @{
@@ -189,7 +185,7 @@ $CHT = @{
 }
 Complete-VMFailover @CHT
 
-# 20. Start the replicated VM on HV1
+# 20. Start the replicated VM on HV2
 Start-VM -VMname HVDirect -ComputerName HV2
 Wait-VM -VMName HVDirect -For IPAddress
 
