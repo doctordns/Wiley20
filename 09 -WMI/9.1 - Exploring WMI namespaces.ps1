@@ -10,9 +10,9 @@ Get-CimClass -Namespace 'root' | Select-Object -First 20
 Get-CimInstance -Namespace 'root' -ClassName __NAMESPACE |
   Sort-Object -Property Name
 
-# 3. Get and count classes in root\CimV2
-$Classes = Get-CimClass -Namespace 'root\CimV2'  
-"There are $($Classes.Count) classes in root\CimV2"
+# 3. Get and count classes in root\CIMV2
+$Classes = Get-CimClass -Namespace 'root\CIMV2'  
+"There are $($Classes.Count) classes in root\CIMV2"
 
 # 4. Discovering ALL namespaces on DC1
 Function Get-WMINamespaceEnum {
@@ -25,14 +25,14 @@ Function Get-WMINamespaceEnum {
 $Namespaces = Get-WMINamespaceEnum 'root' | Sort-Object
 "There are $($Namespaces.count) WMI namespaces on this host"
 
-# 5. View some of the namespaces on DC1
+# 5. View some of the namespaces
 $Namespaces |
   Select-Object -First 20
 
 # 6. Counting WMI classes on DC1
-$WMICLasses = @()
+$WMIClasses = @()
 Foreach ($Namespace in $Namespaces) {
-  $WMICLasses += Get-CimClass -Namespace $Namespace
+  $WMIClasses += Get-CimClass -Namespace $Namespace
 }
 "There are $($WMIClasses.count) classes on $(hostname)"
 
@@ -51,12 +51,12 @@ $SB = {
      ForEach-Object { Get-WMINamespaceEnum "$ns\$($_.name)"   }
    }  # End of function
    $Namespaces = Get-WMINamespaceEnum 'root' | Sort-Object
-   $WMICLasses = @()
+   $WMIClasses = @()
    Foreach ($Namespace in $Namespaces) {
-   $WMICLasses += Get-CimClass -Namespace $Namespace
+   $WMIClasses += Get-CimClass -Namespace $Namespace
   }
  "There are $($Namespaces.count) WMI namespaces on $(hostname)"
- "There are $($Wmiclasses.count) classes on $(hostname)"
+ "There are $($WMIClasses.count) classes on $(hostname)"
 }
 Invoke-Command -ComputerName SRV2 -ScriptBlock $SB
 

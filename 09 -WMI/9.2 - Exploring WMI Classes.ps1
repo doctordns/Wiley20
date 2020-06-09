@@ -6,7 +6,7 @@
 # 1. View Win32_Share class
 Get-CimClass -ClassName Win32_Share
 
-# 2. Viewing class properties
+# 2. Get Win32_Share class properties
 Get-CimClass -ClassName Win32_Share |
   Select-Object -ExpandProperty CimClassProperties |
     Sort-Object -Property Name |

@@ -25,7 +25,7 @@ $Event.SourceEventArgs.NewEvent.TargetInstance
 # 5. Unregister Event
 Unregister-Event -SourceIdentifier 'NewProcessEvent'
 
-# 6. Create and Register Extrinsic event query- handled by provider
+# 6. Create and Register Extrinsic event query - handled by provider
 New-Item -Path 'HKLM:\SOFTWARE\Wiley' | Out-Null
 $Query2 = "SELECT * FROM RegistryValueChangeEvent 
             WHERE Hive='HKEY_LOCAL_MACHINE' 
@@ -66,16 +66,17 @@ $Event = @{
   Query     = $Query1
   Action    = {
     $Global:ADEvent = $Event
-    Write-Host 'We have a group change'          }
+    Write-Host 'We have a group change'
+  }
 }
 Register-CimIndicationEvent @Event
 
 # 12. Add a user to the enterprise admin group
-Add-ADGroupMember -Identity 'Enterprise admins' -Members Sylvester
+Add-ADGroupMember -Identity 'Enterprise Admins' -Members Sylvester
 
 # 13. View who was added
 $ADEvent.SourceEventArgs.NewEvent.TargetInstance | 
-  Format-Table -Property DS_sAMAccountName*,DS_Member
+  Format-Table -Property DS_sAMAccountName,DS_Member
 
 # 14. Unregister for the event
 Unregister-Event -SourceIdentifier 'DSGroupChange'

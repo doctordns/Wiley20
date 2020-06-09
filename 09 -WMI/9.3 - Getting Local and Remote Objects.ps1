@@ -10,14 +10,14 @@ $GCIMHT1 = @{
     Namespace = 'root\directory\LDAP'
     ClassName = 'ds_group'
 }
-Get-Ciminstance @GCIMHT1|
+Get-CimInstance @GCIMHT1|
   Sort-Object -Property Name |
     Select-Object -First 10 |
       Format-Table -Property DS_name, DS_distinguishedName
 
 # 3. Using -Filter
 $Filter = "ds_Name LIKE '%operator%' "
-Get-Ciminstance @GCIMHT1  -Filter $Filter |
+Get-CimInstance @GCIMHT1  -Filter $Filter |
   Format-Table -Property ds_Name
 
 # 4. Use a WMI Query

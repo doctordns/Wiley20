@@ -2,7 +2,7 @@
 
 # Run on DC1
 
-# 1. Review Create method of Win32_Share
+# 1. Review methods of Win32_Share class
 Get-CimClass -ClassName Win32_Share | 
   Select-Object -ExpandProperty CimClassMethods
 
@@ -24,9 +24,9 @@ Invoke-CimMethod -ClassName Win32_Share -MethodName Create -Arguments $NSHT
 Get-SMBShare -Name 'TestShare1'
 
 # 5. View the new SMB Share using Get-CimInstance
-Get-CimInstance -Class Win32_Share -filter "Name = 'TestShare1'"
+Get-CimInstance -Class Win32_Share -Filter "Name = 'TestShare1'"
 
-# 6 Remove the share
-Get-CimInstance -Class Win32_Share -filter "Name = 'TestShare1'" |
+# 6. Remove the share
+Get-CimInstance -Class Win32_Share -Filter "Name = 'TestShare1'" |
   Invoke-CimMethod -MethodName Delete
 
