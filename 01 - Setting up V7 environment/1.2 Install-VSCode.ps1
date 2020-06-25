@@ -1,7 +1,7 @@
 ﻿# 1.2 Install-VSCode
 # 
 # Run on CL1 after installing PowerShell 7
-# Run in PowerShell 7 WIndow!
+# Run in PowerShell 7 console
 
 # 1. Download the VS Code Installation Script
 $VSCPATH = 'C:\Foo'
@@ -14,12 +14,13 @@ $Extensions =  "Streetsidesoftware.code-spell-checker",
 $InstallHT = @{
   BuildEdition         = 'Stable-System'
   AdditionalExtensions = $Extensions
-  LaunchWhenDOne       = $true}             
+  LaunchWhenDone       = $true
+}             
 .\Install-VSCode.ps1 @InstallHT 
 
 #  At this point, VS Code should be displayed.
 #  The remainder of this script in VS Code 
-#  MAKE SURE YOU RUN VSCOde as Admin
+#  MAKE SURE YOU RUN VSCode as Admin
 
 # 3. Create a Sample Profile File
 $SAMPLE = 'https://raw.githubusercontent.com/doctordns/Wiley20/master/' +
@@ -90,7 +91,7 @@ $Shortcut.TargetPath = $SourceFileLocation
 #Save the Shortcut to the TargetPath
 $Shortcut.Save()
 
-# 9. Build UpdatedLayout XML
+# 9. Build Updated Layout XML
 $XML = @'
 <?xml version="1.0" encoding="utf-8"?>
 <LayoutModificationTemplate

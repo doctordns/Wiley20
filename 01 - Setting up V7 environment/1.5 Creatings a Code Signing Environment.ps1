@@ -1,4 +1,4 @@
-# 1.5. Creating a Code Signing envionment
+# 1.5. Creating a Code Signing environment
 # 
 # Run from DC1 - run in an elevated session
 # Uses self signed Certificates
@@ -25,7 +25,7 @@ $SignedFile = "C:\Foo\HelloWorld.ps1"
 $File | 
   Out-File -FilePath $SignedFile -Force
 
-# 4. Set Execution Policy to Remote Signed
+# 4. Set Execution Policy to All Signed
 Set-ExecutionPolicy -ExecutionPolicy AllSigned 
 
 # 5. Attempt to Run the File (pre-signing)
@@ -34,11 +34,20 @@ Set-ExecutionPolicy -ExecutionPolicy AllSigned
 # 6. Sign the script with the $SignCert certificate
 Set-AuthenticodeSignature -FilePath $SignedFile -Certificate $SignCert 
 
-# 7. Copy the cert to the Trusted Publisher Cert store
+# 7. Copy the cert to the Trusted Root Cert store of Local Machine
+#    And to the Trusted Publisher cert store
+# local Machine Root store
+$CertStore = 'System.Security.Cryptography.X509Certificates.X509Store'
+$CertArgs  = 'Root','LocalMachine'
+$Store     = New-Object -TypeName $CertStore -ArgumentList $CertArgs
+$Store.Open('ReadWrite')
+$Store.Add($SignCert)
+$Store.Close()    
+# Local Machine Trusted Publisher
 $CertStore = 'System.Security.Cryptography.X509Certificates.X509Store'
 $CertArgs  = 'TrustedPublisher','LocalMachine'
 $Store     = New-Object -TypeName $CertStore -ArgumentList $CertArgs
-$Store.Open(‘ReadWrite’)
+$Store.Open('ReadWrite')
 $Store.Add($SignCert)
 $Store.Close()    
 
@@ -49,3 +58,9 @@ Set-AuthenticodeSignature -FilePath $SignedFile -Certificate $SignCert |
 
 # 9. Run the script
 & $SignedFile
+
+# 10. Test the script’s digital signature
+Get-AuthenticodeSignature -FilePath $SignedFile |
+  Format-Table -AutoSize& $SignedFile
+
+

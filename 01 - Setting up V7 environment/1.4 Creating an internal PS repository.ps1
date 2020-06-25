@@ -10,7 +10,7 @@ New-Item -Path $LPATH -ItemType Directory | Out-Null
 $SMBHT = @{
   Name        = 'RKRepo' 
   Path        = $LPATH 
-  Description = 'Reskit Repopository'
+  Description = 'Reskit Repository'
   FullAccess  = 'Everyone'
 }
 New-SmbShare @SMBHT
@@ -36,13 +36,13 @@ $NMHT = @{
   Description       = 'Hello World module' 
   Author            = 'DoctorDNS@Gmail.com' 
   FunctionsToExport =  'Get-HelloWorld'
-  ModuleVersio      = '1.0.0'
+  ModuleVersion     = '1.0.0'
 }
 New-ModuleManifest @NMHT 
 
 # 7. Create the repository as trusted
 #    Repeat on every host that uses this repository
-$Path = '\\DC1.Reskit.Org\RKRepo'
+$Path = '\\DC1\RKRepo'
 $REPOHT = @{
   Name               = 'RKRepo'
   SourceLocation     = $Path
