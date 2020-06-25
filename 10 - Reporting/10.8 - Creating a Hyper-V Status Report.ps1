@@ -5,14 +5,14 @@
 # 1. Create a basic report object hash table
 $ReportHT = [Ordered] @{}
 
-# 2. Get the host details and add them to the Report object
+# 2. Get the host details and add them to the report hash table
 $HostDetails = Get-CimInstance -ClassName Win32_ComputerSystem
 $ReportHT.HostName = $HostDetails.Name
 $ReportHT.Maker = $HostDetails.Manufacturer
 $ReportHT.Model = $HostDetails.Model
 
-# 3. Add the PowerShell version information
-$ReportHT.PSVersion = $PSVersionTable.PSVersion.tostring()
+# 3. Add the PowerShell and OS version information
+$ReportHT.PSVersion = $PSVersionTable.PSVersion.ToString()
 # Add OS information:
 $OS = Get-CimInstance -Class Win32_OperatingSystem
 $ReportHT.OSEdition    = $OS.Caption
@@ -30,7 +30,7 @@ $PHT = @{
 }
 $Proc = Get-CimInstance @PHT
 $ReportHT.CPUCount = ($Proc |
-    Where-Object elementname -Match 'Logical Processor').COUNT
+    Where-Object elementname -match 'Logical Processor').count
 
 # 5. Add the current host CPU usage
 $Cname = '\processor(_total)\% processor time'
@@ -38,13 +38,13 @@ $CPU = Get-Counter -Counter $Cname
 $ReportHT.HostCPUUsage = $CPU.CounterSamples.CookedValue
 
 # 6. Add the total host physical memory
-$Memory = Get-Ciminstance -Class Win32_ComputerSystem
+$Memory = Get-CimInstance -Class Win32_ComputerSystem
 $HostMemory = [float] ( "{0:n2}" -f ($Memory.TotalPhysicalMemory/1GB))
 $ReportHT.HostMemoryGB = $HostMemory
 
 # 7. Add the memory allocated to VMs
 $Sum = 0
-Get-VM | Foreach-Object {$sum += $_.MemoryAssigned + $Total}
+Get-VM | Foreach-Object {$Sum += $_.MemoryAssigned}
 $Sum = [float] ( "{0:N2}" -f ($Sum/1gb) )
 $ReportHT.AllocatedMemoryGB = $Sum
 
@@ -65,22 +65,22 @@ $VMHT = @()
 
 # 12. Get VM details
 Foreach ($VM in $VMs) {
-# Create VM Report hash table
- $VMReport = [ordered] @{}
-# Add VM's Name
- $VMReport.VMName = $VM.VMName
-# Add Status
- $VMReport.Status = $VM.Status
-# Add Uptime
- $VMReport.Uptime = $VM.Uptime
-# Add VM CPU
- $VMReport.VMCPU = $VM.CPUProcessorCount
-# Replication Mode/Status
- $VMReport.ReplMode = $VM.ReplicationMode
- $VMReport.ReplState = $Vm.ReplicationState
-# Create object from Hash table, add to array
- $VMR = New-Object -TypeName PSObject -Property $VMReport
- $VMHT += $VMR
+  # Create VM Report hash table
+  $VMReport = [ordered] @{}
+  # Add VM's Name
+  $VMReport.VMName = $VM.VMName
+  # Add Status
+  $VMReport.Status = $VM.Status
+  # Add Uptime
+  $VMReport.Uptime = $VM.Uptime
+  # Add VM CPU
+  $VMReport.VMCPU = $VM.CPUProcessorCount
+  # Replication Mode/Status
+  $VMReport.ReplMode = $VM.ReplicationMode
+  $VMReport.ReplState = $Vm.ReplicationState
+  # Create object from Hash table, add to array
+  $VMR = New-Object -TypeName PSObject -Property $VMReport
+  $VMHT += $VMR
 }
 
 # 13. Finish creating the report

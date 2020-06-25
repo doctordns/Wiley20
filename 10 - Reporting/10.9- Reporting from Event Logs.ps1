@@ -55,7 +55,7 @@ $MSGS |
     Format-Table Name, Count
 
 # 8. Examine RDP logons
-$MSGS | Where-Object logontype -eq '10'
+$MSGS | Where-Object LogonType -eq '10'
 
 
 

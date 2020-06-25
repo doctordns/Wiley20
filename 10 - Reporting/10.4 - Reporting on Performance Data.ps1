@@ -5,7 +5,7 @@
 
 # 1 - Import the CSV file of counters
 $Folder = 'C:\PerfLogs\Admin'
-$File = Get-ChildItem -Path $folder\*.csv -Recurse
+$File = Get-ChildItem -Path $Folder\*.csv -Recurse
 
 # 2. Import the performance counters.
 $Counters = Import-Csv $File.FullName 
@@ -18,14 +18,14 @@ $Counters[0] = $Counters[1]
 $CN = '\\SRV1\Processor(_Total)\% Processor Time'
 $HT = @{
  Name = 'CPU'
- Expression = {[System.Double] $_.$cn}
+ Expression = {[System.Double] $_.$CN}
 }
 $Stats = $Counters | 
-  Select-Object -Property *,$HT |
+  Select-Object -Property $HT |
     Measure-Object -Property CPU -Average -Minimum -Maximum  
 
 # 5. Add  95th percent value of CPU 
-$CN = '\\srv1\Processor(_Total)\% Processor Time'
+$CN = '\\SRV1\Processor(_Total)\% Processor Time'
 $Row = [int]($Counters.Count * .95 )
 $CPU = ($Counters.$CN | Sort-Object)
 $CPU95 = [double] $CPU[$Row]

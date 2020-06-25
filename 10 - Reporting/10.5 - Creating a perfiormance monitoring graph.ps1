@@ -6,7 +6,7 @@
 Add-Type -AssemblyName System.Windows.Forms.DataVisualization
 
 # 2. Import the CSV data from earlier, and fix row 0
-$CSVFile     = Get-ChildItem -path C:\PerfLogs\Admin\*.csv -rec
+$CSVFile     = Get-ChildItem -Path C:\PerfLogs\Admin\*.csv -Recurse
 $Counters    = Import-Csv $CSVFile
 $Counters[0] = $Counters[1] # fix row 0 issues
 
@@ -14,7 +14,7 @@ $Counters[0] = $Counters[1] # fix row 0 issues
 $TYPE     = 'System.Windows.Forms.DataVisualization.Charting.Chart'
 $CPUChart = New-Object -Typename $TYPE
 
-# 4. Defne the chart dimensions
+# 4. Defone the chart dimensions
 $CPUChart.Width  = 1000
 $CPUChart.Height = 600
 $CPUChart.Titles.Add("SRV1 CPU Utilisation") | Out-Null
@@ -34,13 +34,14 @@ $Name = ($Counters[0] | Get-Member |
 $CPUChart.Series.Add("CPUPerc")  | Out-Null
 $CPUChart.Series["CPUPerc"].ChartType = "Line"
 $CPUCounter = '\\SRV1\Processor(_Total)\% Processor Time'
-$counters | 
+$Counters | 
   ForEach-Object {
    $CPUChart.Series["CPUPerc"].Points.AddXY($_.$name,$_.$CPUCounter) |
         Out-Null
   }
 
-# 8. Ensure folder exists, then save the chart image as a png file in the folder:
+# 8. Ensure folder exists, then save the chart image as 
+#    a png file in the folder:
 $NIHT = @{
   Path        = 'C:\Perflogs\Reports'
   ItemType    = 'Directory'
@@ -50,4 +51,4 @@ New-Item @NIHT
 $CPUChart.SaveImage("C:\PerfLogs\Reports\SRV1CPU.Png", 'PNG')
 
 # 9. View the chart image
-& C:\PerfLogs\Reports\SRV1CPU.Png
+& C:\PerfLogs\Reports\Srv1CPU.Png

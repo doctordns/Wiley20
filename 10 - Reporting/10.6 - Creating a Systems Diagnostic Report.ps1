@@ -1,4 +1,4 @@
-﻿# 10.7  -  Creating a Systems Diagnostic report
+﻿# 10.6  -  Creating a Systems Diagnostic report
 #
 # Run on SRV1
 

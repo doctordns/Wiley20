@@ -31,12 +31,11 @@ $XF   = Get-ChildItem -Path $Path\*.xml
 $XML  = [XML] (Get-Content -Path $XF)
 $Files = $XML.StorageReport.ReportData.Item
 $Files | Where-Object Path -NotMatch '^Windows|^Program|^Users' |
-  Format-Table -Property name, path,
-               @{ name ='Size MB'
-                  alignment = 'right'
-                  expression = {(([int]$_.size)/1mb).tostring('N2')}},
+  Format-Table -Property Name, Path,
+               @{ Name ='Size MB'
+                  Alignment = 'right'
+                  Expression = {(([int]$_.size)/1mb).TosString('N2')}},
                DaysSinceLastAccessed -AutoSize
-
 
 # 6. Create a monthly FSRM Task
 $Date = Get-Date '04:20'
@@ -64,7 +63,7 @@ Get-ScheduledTask |
 
 # 9. Run the task interactively
 Get-ScheduledTask |
-  Where-Object TaskName -Match $ReportName |
+  Where-Object TaskName -match $ReportName |
     Start-ScheduledTask 
 Get-ScheduledTask -TaskName '*Monthly*'
 
@@ -82,4 +81,4 @@ Get-ScheduledTask |
 Remove-FsrmStorageReport $ReportName -Confirm:$False
 Get-Childitem C:\StorageReports\Interactive,
               C:\StorageReports\Scheduled | 
-  Remove-Item -Force
+  Remove-Item -Force -Recurse
