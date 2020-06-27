@@ -2,13 +2,13 @@
 #
 # Run on HV1 after HVDirect has been created on HV1
 
-# 1. Create a credential object for Reskit\Administrator
+# 1. Create a credential object for local Administrator
 $LHAN   = 'Localhost\Administrator'
 $PS     = 'Pa$$w0rd'
-$RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
+$LHP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
 $CREDHT = @{
            TypeName     = 'System.Management.Automation.PSCredential'
-           Argumentlist = $LHAN, $RKP
+           Argumentlist = $LHAN, $LHP
 }
 $LHCred = New-Object @CREDHT
 $VMNAME = 'HVDirect'

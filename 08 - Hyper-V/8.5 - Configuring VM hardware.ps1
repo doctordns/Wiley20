@@ -14,7 +14,7 @@ Get-VMBios $VMName
 
 # 3. Set CPU count for HVDirect
 Set-VMProcessor -VMName $VMName -Count 2
-Get-VMProcessor -VmName $VMName |
+Get-VMProcessor -VMName $VMName |
   Format-Table VMName, Count
 
 # 4. Set VM memory
@@ -22,8 +22,8 @@ $VMHT = [ordered] @{
   VMName               = $VMName
   DynamicMemoryEnabled = $true
   MinimumBytes         = 768MB
-  StartupBytes         = 2GB
-  MaximumBytes         = s4GB
+  StartupBytes         = 960MB
+  MaximumBytes         = 1GB
 }
 Set-VMMemory @VMHT
 Get-VMMemory -VMName $VMName

@@ -70,7 +70,6 @@ $ICHT = @{
   VMName      = $VMName
   ScriptBlock = $SB 
   Credential  = $RKCred
-
 }
 Invoke-Command @ICHT
 
@@ -104,10 +103,10 @@ $ICHT = @{
 }
 Invoke-Command @ICHT
 
-# 14. View Checkpoints for HVDirect
+# 14. View checkpoints for HVDirect
 Get-VMCheckpoint -VMName $VMName
 
-# 15. Remove all the checkp0ints for HVDirect
+# 15. Remove all the checkpoints for HVDirect
 Get-VMCheckpoint -VMName $VMName |
   Remove-VMSnapshot
 

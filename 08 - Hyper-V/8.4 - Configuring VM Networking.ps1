@@ -7,18 +7,18 @@ $VMNAME = 'HVDirect'
 Get-VMNetworkAdapter -VMName $VMNAME
 
 # 2. Create a credential 
-$RKAN   = 'Localhost\Administrator'
-$PS     = 'Pa$$w0rd'e
-$RKP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
+$LHAN   = 'Localhost\Administrator'
+$PS     = 'Pa$$w0rd'
+$LHP    = ConvertTo-SecureString -String $PS -AsPlainText -Force
 $T      = 'System.Management.Automation.PSCredential'
-$RKCred = New-Object -TypeName $T -ArgumentList $RKAN, $RKP
+$LHCred = New-Object -TypeName $T -ArgumentList $LHAN, $LHP
 
 # 3. Get NIC Details from inside the VM
 $VMHT = @{
     VMName      = $VMNAME
     ScriptBlock = {Get-NetIPConfiguration | 
                      Format-List }
-    Credential  = $RKCred
+    Credential  = $LHCred
 }
 Invoke-Command @VMHT 
 
@@ -41,7 +41,7 @@ Get-VMNetworkAdapter -VMName HV1 |
 # 7. Get VM networking information
 Get-VMNetworkAdapter -VMName $VMNAME
 
-# 8. With VM1 now in the network, observe the IP address in the VM
+# 8. With HVDirect now in the network, observe the IP address in the VM
 $NCHT = @{
     VMName      = $VMNAME
     ScriptBlock = {Get-NetIPConfiguration | Format-List}

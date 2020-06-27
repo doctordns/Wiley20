@@ -2,11 +2,12 @@
 
 # Run on HV1
 
-# 0 Revert VMs before starting
+# 0. Revert VMs before starting
+Stop-VM -Name HVDirect -ComputerName HV2 -Force
 Remove-VM -Name HVDirect -ComputerName HV2 -Force
-Start-VM HVDirect -ComputerName HV1
+Start-VM -VMName HVDirect -ComputerName HV1 
 
-# 1. View the HVDirect VM on HV1 and verify that it is turned off and not saved
+# 1. View the HVDirect VM on HV1 and verify that it is running and not saved
 Get-VM -Name HVDirect 
 
 # 2. Get the VM configuration location 
@@ -16,7 +17,7 @@ Get-VM -Name HVDirect
 Get-VMHardDiskDrive -VMName HVDirect | 
   Format-Table -Property VMName, ControllerType, Path
 
-# 4. Move the VM's to the C:\HVD_New folder
+# 4. Move the VMs to the C:\HVD_NEW folder
 $MHT = @{
   Name                   = 'HVDirect'
   DestinationStoragePath = 'C:\HVD_NEW'
@@ -38,7 +39,7 @@ Enable-VMMigration -ComputerName HV1, HV2
 $SVHT = @{
   UseAnyNetworkForMigration                 = $true
   ComputerName                              = 'HV1', 'HV2'
-  VirtualMachineMigrationAuthenticationType =  'Kerberos'
+  VirtualMachineMigrationAuthenticationType = 'Kerberos'
   VirtualMachineMigrationPerformanceOption  = 'Compression'
 }
 Set-VMHost @SVHT
@@ -86,6 +87,6 @@ Move-VM @VMHT2
 $Finish = Get-Date
 ($Finish - $Start)
 
-# 10. Display the time taken to migrate
+# 15. Display the time taken to migrate
 $OS = "Migration took: [{0:n2}] minutes"
 ($os -f ($($finish-$start).TotalMinutes))
