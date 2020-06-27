@@ -1,11 +1,11 @@
 # 2.1 Windows PowerShell Compatability
 
-# Run on CL1 and as DC1
+# Run on CL1 and on DC1
 
 # Start on CL1
 
 # 1. Create a simple script module - MyModule1
-$MyModulePath = "C:\Users\tfl\Documents\PowerShell\Modules\MyModule1"
+$MyModulePath = "$env:USERPROFILE\Documents\PowerShell\Modules\MyModule1"
 $MyModule = @"
 # MyModule1.PSM1
 Function Get-HelloWorld {
@@ -28,13 +28,15 @@ $NMMFHT = @{
 }
 New-ModuleManifest @NMMFHT 
 Get-Module -Name MyModule1 -List
-# remove and re-import
+# remove and re-import the module
 Get-Module -Name MyModule1 | Remove-Module 
-Import-Module -Name Mymodule1 -Verbose
+Import-Module -Name MyModule1 -Verbose
 Get-HelloWorld
 
-# 4. Create MyModule2 with 2 versions:
-# Create folders$MyModule2Path   = "C:\Users\tfl\Documents\PowerShell\Modules\MyModule2"
+# 4. Create MyModule2 with 2 versions
+# Create Module folders
+$MyModule2Path   = 
+  "$env:USERPROFILE\Documents\PowerShell\Modules\MyModule2"
 $MyModule2V1Path = "$MyModule2Path\1.0.0"
 $MyModule2V2Path = "$MyModule2Path\2.0.0"
 New-Item -Path $MyModule2Path -ItemType Directory -Force | Out-Null
@@ -42,22 +44,21 @@ New-Item -Path $MyModule2Path -Name '1.0.0' -ItemType Directory -Force |
   Out-Null
 New-Item -Path $MyModule2Path -Name '2.0.0' -ItemType Directory -Force |
   Out-Null
-# Create .PSM1
-# MyModule2V1.PSM1
+# Create MyModule2V1.PSM1
 $MyModule2V1 = @"
 Function Get-HelloWorld2 {
-  "Hello World from My Module (V1)"
+  "Hello World from MyModule2 (V1)"
 }
 "@
-$MyModule2V1 |Out-File -Path "$MyModule2V1Path\MyModule2.PSM1"
-# MyModule2V2.PSM1
+$MyModule2V1 | Out-File -Path "$MyModule2V1Path\MyModule2.PSM1"
+# Create MyModule2V2.PSM1
 $MyModule2V2 = @"
 Function Get-HelloWorld2 {
-  "Hello World from My Module (Version 2)"
+  "Hello World from MyModule2 (V2)"
 }
 "@
 $MyModule2V2 | Out-File -Path "$MyModule2V2Path\MyModule2.PSM1"
-# Finally create manifests for both
+# Create manifests for both versions of this module
 $NMMFHV1HT = @{
   Path        = "$MyModule2V1Path\MyModule2.PSD1"
   Author      = "Thomas Lee"
@@ -72,37 +73,38 @@ $NMMFHV2HT = @{
   Rootmodule  = 'MyModule2.psm1' 
 }
 New-ModuleManifest @NMMFHV2HT -ModuleVersion '2.0.0'
+
+# 5. Use MyModule2
+# Discover, import and use MyModule2
 Get-Module MyModule2 -ListAvailable
-Import-Module -Name MyModule2 -Verbose
-Get-HelloWorld
-# View Details of MyModule2
-Get-Module -Name MyModule2 -List
-# Re-import MyModule2
-Get-Module -Name MyModule2 | Remove-Module 
-Import-Module -Name MyModule2 -Verbose
+Import-Module -Name MyModule2 -Verbose -RequiredVersion '1.0.0'
+Get-HelloWorld2
+# Re-import MyModule2 - by default the highest version
+Import-Module -Name MyModule2 -Force -Verbose
 # Use V2 Function
 Get-HelloWorld2
 
-# 5 Demonstrate autoload of MyModule2
+# 6. Demonstrate autoload of MyModule2
 Get-Module Mymodule* | Remove-Module -Verbose
 Get-HelloWorld2
 
-# 6. View Module Analysis Cache
+# 7. View Module Analysis Cache
 $CF = "$Env:LOCALAPPDATA\Microsoft\Windows\PowerShell\"+
       "ModuleAnalysisCache"  
 Get-ChildItem -Path $CF
 
-# Run on SRV1
+# Run on DC1
 
-# 7. Import Server Manager Module on SRV1 and use it
+# 8. Import Server Manager Module on DC1 and use it
 Get-Module ServerManager -ListAvailable
 Import-Module ServerManager
-Get-Module ServerManager
-Get-WindowsFeature -Name Hyper-V 
+Get-Module ServerManager | Format-Table -AutoSize -Wrap
+Get-WindowsFeature -Name Hyper-V | Format-Table -AutoSize
 $CS = Get-PSSession -Name WinPSCompatSession
 Invoke-Command -Session $CS -ScriptBlock {
-      Get-WindowsFeature -Name Hyper-V | Format-Table}
+  Get-WindowsFeature -Name Hyper-V | Format-Table -AutoSize
+}
 
-# 8. View JSON Configuration File
+# 9. View JSON Configuration File
 Get-Content -Path $PSHOME\powershell.config.json
  
