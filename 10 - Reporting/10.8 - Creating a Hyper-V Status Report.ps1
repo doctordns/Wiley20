@@ -13,12 +13,12 @@ $ReportHT.Model = $HostDetails.Model
 
 # 3. Add the PowerShell and OS version information
 $ReportHT.PSVersion = $PSVersionTable.PSVersion.ToString()
-# Add OS information:
+# Add OS information
 $OS = Get-CimInstance -Class Win32_OperatingSystem
 $ReportHT.OSEdition    = $OS.Caption
 $ReportHT.OSArch       = $OS.OSArchitecture
 $ReportHT.OSLang       = $OS.OSLanguage
-$ReportHT.LastBootTime = $os.LastBootUpTime
+$ReportHT.LastBootTime = $OS.LastBootUpTime
 $Now = Get-Date
 $UTD = [float] ("{0:n3}" -f (($Now -$OS.LastBootUpTime).Totaldays))
 $ReportHT.UpTimeDays = $UTD
@@ -74,7 +74,7 @@ Foreach ($VM in $VMs) {
   # Add Uptime
   $VMReport.Uptime = $VM.Uptime
   # Add VM CPU
-  $VMReport.VMCPU = $VM.CPUProcessorCount
+  $VMReport.VMCPU = $VM.ProcessorCount
   # Replication Mode/Status
   $VMReport.ReplMode = $VM.ReplicationMode
   $VMReport.ReplState = $Vm.ReplicationState

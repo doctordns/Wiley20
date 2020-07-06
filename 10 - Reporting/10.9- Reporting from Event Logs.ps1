@@ -3,7 +3,7 @@
 # Run on DC1
 
 
-# 1. Count logs and logs with records:
+# 1. Count logs and logs with records
 $EventLogs  = Get-WinEvent -ListLog *
 $Logs       = $EventLogs.Count
 $ActiveLogs = ($Eventlogs | Where-Object RecordCount -gt 0).count
@@ -35,11 +35,11 @@ $MSGS = @()
 Foreach ($Logon in $Logons) {
     $XMLMSG = [xml] $Logon.ToXml()
     $t = '#text'
-    $HostName   = $XMLMSg.Event.EventData.data.$t[1]
-    $HostDomain = $XMLMSg.Event.EventData.data.$t[2]
-    $Account    = $XMLMSg.Event.EventData.data.$t[5]
-    $AcctDomain = $XMLMSg.Event.EventData.data.$t[6]
-    $LogonType  = $XMLMSg.Event.EventData.data.$t[8]
+    $HostName   = $XMLMSG.Event.EventData.data.$t[1]
+    $HostDomain = $XMLMSG.Event.EventData.data.$t[2]
+    $Account    = $XMLMSG.Event.EventData.data.$t[5]
+    $AcctDomain = $XMLMSG.Event.EventData.data.$t[6]
+    $LogonType  = $XMLMSG.Event.EventData.data.$t[8]
     $MSG = New-Object -Type PSCustomObject -Property @{
        Account   = "$AcctDomain\$Account"
        Host      = "$HostDomain\$Hostname"

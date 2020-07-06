@@ -47,7 +47,7 @@ $RKReport += "`n*** Users Not logged in since $OneWeekAgo`n"
 $RKReport += $RKUsers |
     Where-Object {$_.Enabled -and $_.LastLogonDate -le $OneWeekAgo} |
         Sort-Object -Property LastlogonDate |
-            Format-Table -Property SamAccountName,lastlogondate |
+            Format-Table -Property SamAccountName,LastLogonDate |
                 Out-String
 
 # 6. Users with high invalid password attempts
