@@ -36,14 +36,14 @@ Set-AuthenticodeSignature -FilePath $SignedFile -Certificate $SignCert
 
 # 7. Copy the cert to the Trusted Root Cert store of Local Machine
 #    And to the Trusted Publisher cert store
-# local Machine Root store
+# Local Machine Trusted Root store
 $CertStore = 'System.Security.Cryptography.X509Certificates.X509Store'
 $CertArgs  = 'Root','LocalMachine'
 $Store     = New-Object -TypeName $CertStore -ArgumentList $CertArgs
 $Store.Open('ReadWrite')
 $Store.Add($SignCert)
 $Store.Close()    
-# Local Machine Trusted Publisher
+# Local Machine Trusted Publisher store
 $CertStore = 'System.Security.Cryptography.X509Certificates.X509Store'
 $CertArgs  = 'TrustedPublisher','LocalMachine'
 $Store     = New-Object -TypeName $CertStore -ArgumentList $CertArgs
@@ -61,6 +61,6 @@ Set-AuthenticodeSignature -FilePath $SignedFile -Certificate $SignCert |
 
 # 10. Test the script’s digital signature
 Get-AuthenticodeSignature -FilePath $SignedFile |
-  Format-Table -AutoSize& $SignedFile
+  Format-Table -AutoSize
 
 
