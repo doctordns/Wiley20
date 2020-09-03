@@ -59,7 +59,7 @@ Add-DnsServerResourceRecordMX @MXHT
 
 # 6. Restart DNS Service to ensure replication
 Restart-Service -Name DNS
-$SB = {Restart-Service -Name dns}
+$SB = {Restart-Service -Name DNS}
 Invoke-Command -ComputerName DC2 -ScriptBlock $SB
 
 # 7. Check results of RRs in Cookham.Net zone

@@ -45,10 +45,10 @@ $IHT = @{
 Set-VMDvdDrive @IHT
 
 # 10. Start the VM
-Start-VM -VMname $VMname 
+Start-VM -VMName $VMName 
 
 # 11 Complete a manual Installation
 #    DO IT VIA THE GUI
 
 # 12. View the results
-Get-VM -Name $VMname 
+Get-VM -VMName $VMNme 

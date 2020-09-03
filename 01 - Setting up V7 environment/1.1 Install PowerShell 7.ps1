@@ -1,6 +1,6 @@
 # Chapter 1 - Topic 1 - Install PowerShell 7
 
-# Run on CL1
+# Run on DC
 # Run using an elevated Windows PowerShell 5.1 host
 
 # 1. Enable scripts to be run

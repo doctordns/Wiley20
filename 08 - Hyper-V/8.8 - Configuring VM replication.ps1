@@ -15,14 +15,22 @@ $VMHT = @{
 Set-VMProcessor @VMHT
 # Set VM Memory for HV2
 $VMHT = [ordered] @{
-    VMName               = 'HV2'
-    DynamicMemoryEnabled = $true
-    MinimumBytes         = 768MB
-    StartupBytes         = 2GB
-    MaximumBytes         = 4GB
+  VMName               = 'HV2'
+  DynamicMemoryEnabled = $true
+  MinimumBytes         = 768MB
+  StartupBytes         = 2GB
+  MaximumBytes         = 4GB
 }
 Set-VMMemory @VMHT
-# Configure Hyper-V Host on HV2
+# Restart HV2 VM
+Start-VM -VMName HV2
+Wait-VM -VMName HV2 -For IPAddress
+
+# 0.2 Login to HV2 to add Hyper-V feature to HV2
+# Install the Hyper-V feature on HV2
+# Reboot HV2 to complete the installation of Hyper-V 
+Restart-Computer
+# Login to HV2 again and configure Hyper-V Host on HV2
 # Create folders to hold VM details and disks
 $VMS  = 'C:\VM\VMS'
 $VHDS = 'C:\VM\VHDS\'
@@ -42,22 +50,11 @@ $VMCHT = @{
   ResourceMeteringSaveInterval  = (New-TimeSpan -Hours 2 )
 }
 Set-VMHost @VMCHT
-# Create external switch on HV2  
-$NIC = Get-NetIPConfiguration 'Ethernet'
-New-VMSwitch -Name External -NetAdapterName $NIC.InterfaceAlias
-# Restart HV2 VM
-Start-VM -VMName HV2
-Wait-VM -VMName HV2 -For IPAddress
-
-# 0.2 Login to HV2 to add Hyper-V feature to HV2
-# Install the Hyper-V feature on HV2
-Import-Module -Name Servermanager -WarningAction SilentlyContinue
-Install-WindowsFeature -Name Hyper-V -IncludeManagementTools
-# Create a Switch in HV2
+# Create new External Switch
 $NIC = Get-NetIPConfiguration | Select-Object -First 1
 New-VMSwitch -Name External -NetAdapterName $NIC.InterfaceAlias
-# Reboot HV2 to complete the installation of Hyper-V
-Restart-Computer -ComputerName HV2
+
+
 
 ### main Script starts here
 ### login to HV2 to run these commands from elevated console

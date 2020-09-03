@@ -85,7 +85,7 @@ Import-Module -Name MyModule2 -Force -Verbose
 Get-HelloWorld2
 
 # 6. Demonstrate autoload of MyModule2
-Get-Module Mymodule* | Remove-Module -Verbose
+Get-Module MyModule* | Remove-Module -Verbose
 Get-HelloWorld2
 
 # 7. View Module Analysis Cache
