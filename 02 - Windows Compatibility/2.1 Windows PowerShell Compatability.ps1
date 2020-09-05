@@ -90,7 +90,7 @@ Get-HelloWorld2
 
 # 7. View Module Analysis Cache
 $CF = "$Env:LOCALAPPDATA\Microsoft\Windows\PowerShell\"+
-      "ModuleAnalysisCache"  
+      'ModuleAnalysisCache'  
 Get-ChildItem -Path $CF
 
 # Run on DC1
