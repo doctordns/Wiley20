@@ -1,6 +1,7 @@
 # Create an SMTP Service using SendGrid
 
 ## Introduction
+
 In testing, it is often useful to be able to send SMTP email.
 For example, if you are testing File Server Resource Manager, it is useful to have an email server you can use to test things. 
 If you are reading my book, you may want to do this at home.
@@ -8,6 +9,7 @@ If you are reading my book, you may want to do this at home.
 This article shows how to create an SMTP Forwarder in IIS on Windows that forwards email to Sendgrid.com.
 
 ## Why Sendgrid?
+
 Sendgrid.com offers a free SMTP email forwarding service. 
 With Sendgrid, you can setup an email forwarder in IIS that forwards to Sendgrid's smart host. 
 This way, you can send mail to your local server (eg SRV1), and it forwards to Sendgrid who forwards to your test email inbox.
@@ -19,6 +21,7 @@ Thereafter, you are limited to 100/day.
 That limit has proven perfectly usable for me - and I'm using this a third time for a third book.
 
 ## How to set it up
+
 Let's assume you have an internal VM farm - mine is Reskit.Org.
 You want to setup an SMTP relay server on the WIndows server Host SRV2.
 These directions assume you have a DC, with a domain joined member server SRV2.
@@ -63,7 +66,7 @@ The API Name is just an identification so it can contain anythign useful.
 For example "SendGrid API key for SRV2.Reskit.Org".
 Then Click **Create Key**.
 
-### 6. Copy your APIKey and save it securtly
+### 6. Copy your APIKey and save it securely
 
 Once you click on **Create Key**, Sendgrid creates your API key and displays it for you.
 Copy it to Notepad for safekeeping. 
