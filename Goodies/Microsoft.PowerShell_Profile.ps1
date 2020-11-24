@@ -1,12 +1,17 @@
 # Initial Profile File for PowerShell Host
 
-"In Customisations for [$($Host.Name)]"
-"On $(hostname)"
+# Write Details
+Write-Host "In Customisations for [$($Host.Name)]"
+Write-Host "On $(hostname)"
+
+# Set $Me
+$ME = whoami
+Write-Host "Logged on as $ME"
 
 # Set Format enum limit
 $FormatEnumerationLimit = 99
 
-# Set some command Dgit pushefaults
+# Set some command defaults
 $PSDefaultParameterValues = @{
   "*:autosize"       = $true
   'Receive-Job:keep' = $true
@@ -33,6 +38,6 @@ Set-Alias ghd   Get-HelpDetailed
 $Urk = 'Reskit\Administrator'
 $Prk = ConvertTo-SecureString 'Pa$$w0rd' -AsPlainText -Force
 $Credrk = [pscredential]::New($Urk, $Prk)
-"`$Credrk created for $($credrk.username)"
+Write-Host "`$Credrk created for $($Credrk.username)"
 
 Write-Host "Completed Customisations to $(hostname)"

@@ -1,18 +1,17 @@
-# VSCode 
+# Initial Profile File for PowerShell - in VS COde
 
+# Write details
 "In Customisations for [$($Host.Name)]"
 "On $(hostname)"
 
-
-# Setup console and window
-
-#Set Me
-$me = whoami
+# Set $Me
+$ME = whoami
+Write-Host "Logged on as $ME"
 
 # Set Format enum limit
 $FormatEnumerationLimit = 99
 
-# Set some command Defaults
+# Set some command defaults
 $PSDefaultParameterValues = @{
   "*:autosize"       = $true
   'Receive-Job:keep' = $true
