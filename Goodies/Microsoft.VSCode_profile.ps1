@@ -12,7 +12,7 @@ Write-Host "Logged on as $ME"
 $FormatEnumerationLimit = 99
 
 # Set some command defaults
-$PSDefaultParameterValues = @{
+$PSDefaultParameterValues = @{`
   "*:autosize"       = $true
   'Receive-Job:keep' = $true
   '*:Wrap'           = $true
