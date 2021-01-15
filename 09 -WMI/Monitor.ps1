@@ -1,6 +1,6 @@
 ﻿# Monitor.PS1
 #
-# Runs each time the permanent event handler fies
+# Runs each time the permanent event handler fires
 
 PARAM(
     [string] $Group
