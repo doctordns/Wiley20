@@ -12,7 +12,7 @@ $JEACF = "C:\JEACapabilities"
 New-Item -Path $JEACF -ItemType Directory | Out-Null
 
 # 3. Create Role Capabilities file
-$RCF = Join-Path -Path $JEACF -ChildPath "RKDnsAsmins.psrc"
+$RCF = Join-Path -Path $JEACF -ChildPath "RKDnsAdmins.psrc"
 $RCHT = @{
   Path            = $RCF
   Author          = 'Reskit Administration'
